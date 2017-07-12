@@ -4,3 +4,6 @@
 [submodule "override/cedet"]
 	path = override/cedet
 	url = https://git.code.sf.net/p/cedet/git
+[submodule "override/org-mode"]
+	path = override/org-mode
+	url = git://orgmode.org/org-mode.git
