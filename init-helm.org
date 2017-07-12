@@ -4,7 +4,7 @@
 #+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
 
 * Helm
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (provide 'init-helm)
 #+END_SRC
 
@@ -12,7 +12,7 @@
 
 Loading helm-flx before loading helm
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
   (use-package helm-flx
     :ensure t
     :disabled t
@@ -33,7 +33,7 @@ Loading helm-flx before loading helm
 
 Loading helm-fuzzier too
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
         (use-package helm-fuzzier
           :ensure t
           :disabled t
@@ -57,7 +57,7 @@ Here is a list of the bindings I'm trying out
 | C-h t   | helm world time (show time in different places) |
 | C-x C-i | helm semantic or imenu (depending on the mode)  |
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helm-config
   :ensure helm
   :demand t ;; demand it be loaded!
@@ -361,7 +361,7 @@ Here is a list of the bindings I'm trying out
     (helm-other-buffer '(helm-clj-http-source) "*helm clj-http flags*")))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helm-ls-git
   :ensure t
   :bind ("C-x C-d" . helm-browse-project))
@@ -369,7 +369,7 @@ Here is a list of the bindings I'm trying out
 
 Best way to search in a buffer ever
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helm-swoop
   :ensure t
   :bind (("M-i" . helm-swoop)
@@ -390,7 +390,7 @@ Best way to search in a buffer ever
         helm-swoop-speed-or-color nil))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helm-descbinds
   :ensure t
   :bind ("C-h b" . helm-descbinds)
@@ -403,7 +403,7 @@ Best way to search in a buffer ever
 :END:
 Per-project navigation
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (use-package projectile
   :ensure t
   :defer 5
@@ -453,7 +453,7 @@ of a projectile project. If it is, then it tries to find an eshell buffer that
 belongs to the same project. If it does, then it uses =popwin= to pop that
 buffer up near the bottom of the screen.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (defun deos/popup-project-eshell ()
   (interactive)
   (when (projectile-project-p)

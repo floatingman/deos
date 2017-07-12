@@ -38,6 +38,7 @@ to the bin folder
 
   # Emacs configuration folders
   mkdir -p ~/.emacs.d
+  mkdir -p ~/.emacs.d/lisp
   mkdir -p ~/.emacs.d/eshell
 #+END_SRC
 
@@ -56,7 +57,7 @@ to the bin folder
 
 This is where the magic starts
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
         ;; turn on emacs debugging when starting, turn it off later
         (setq debug-on-error t)
         (setq debug-on-quit t)

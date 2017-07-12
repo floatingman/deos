@@ -1,7 +1,7 @@
 #+TITLE: EMACS CORE CONFIG
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp
 (provide 'init-core)
@@ -15,7 +15,7 @@ This is the place where a lot of default config is set. Most variables
 and functions should be in this file
 
 It's about to get personal
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq user-full-name "Daniel Newman"
       user-mail-address "dwnewman78@gmail.com")
 #+END_SRC
@@ -33,20 +33,20 @@ UTF-8 all the way!
 
 Turn on syntax highlighting for all buffers:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (global-font-lock-mode t)
 #+END_SRC
 
 Raise the maximum number of logs in the =*Messages*= buffer:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq message-log-max 16384)
 #+END_SRC
 
 We don't really need to garbage collect as frequently as Emacs would like to by
 default, so set the threshold up higher:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq gc-cons-threshold (* 50 1024 1024)) ;; 50 mb
 ;; Allow font-lock-mode to do background parsing
 (setq jit-lock-defer-time nil
@@ -57,7 +57,7 @@ default, so set the threshold up higher:
 
 Wait a bit longer than the default (0.5 seconds) before assuming Emacs is idle
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq idle-update-delay 2)
 #+END_SRC
 
@@ -74,40 +74,40 @@ Setup some variables for use in other config files
 
 Make gnutls a bit safer, the default is an absurdly low 256
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq gnutls-min-prime-bits 4096)
 #+END_SRC
 
 When I select a region and start typing, just delete the region automatically.
 This ends up working great with =expand-region=
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (delete-selection-mode 1)
 #+END_SRC
 
 Don't warn me about large files unless they're at least 25mb:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq large-file-warning-threshold (* 25 1024 1024))
 #+END_SRC
 
 If you change buffer, or focus, disable the current buffer's mark:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (transient-mark-mode 1)
 #+END_SRC
 
 Don't indicate empty lines or the end of a buffer with visual
 marks (the lines are cleaned up automatically anyway)
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default indicate-empty-lines nil)
 (setq-default indicate-buffer-boundaries nil)
 #+END_SRC
 
 Turn off all kinds of modes, I don't need the menu bar, or the tool bar:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (when (functionp 'menu-bar-mode)
   (menu-bar-mode -1))
 (when (functionp 'set-scroll-bar-mode)
@@ -123,34 +123,34 @@ Turn off all kinds of modes, I don't need the menu bar, or the tool bar:
 Beep bop boop I am a robot no more. Don't show the startup message, I
 know Emacs is starting.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq ring-bell-function (lambda ()))
 (setq inhibit-startup-screen t)
 #+END_SRC
 
 Why would you not want to know lines/columns in your mode-line?
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (line-number-mode 1)
 (column-number-mode 1)
 #+END_SRC
 
 Ignore case when using completion for file names:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq read-file-name-completion-ignore-case t)
 #+END_SRC
 
 Nobody likes to have to type "yes" to questions, so change it to
 just hitting the =y= key to confirm:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 Confirm before killing emacs, but only on graphical sessions
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (when (window-system)
   (setq confirm-kill-emacs 'yes-or-no-p))
 #+END_SRC
