@@ -1,7 +1,7 @@
 #+TITLE: Daniel Newman's Literate Emacs Configuration
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 * The Beginning
 :PROPERTIES:
@@ -38,13 +38,12 @@ to the bin folder
 
   # Emacs configuration folders
   mkdir -p ~/.emacs.d
-  mkdir -p ~/.emacs.d/lisp
   mkdir -p ~/.emacs.d/eshell
 #+END_SRC
 
 #+BEGIN_SRC sh :tangle install.sh :eval no
     ln -sfv $PWD/deos.el ~/.emacs.d/init.el
-    ln -sfv $PWD/init-*.el ~/.emacs.d/lisp
+    ln -sfv $PWD ~/.emacs.d/deos
     ln -sfv $PWD/site-lisp ~/.emacs.d/site-lisp
     ln -sfv $PWD/override ~/.emacs.d/override
     ln -sfv $PWD/snippets ~/.emacs.d/snippets
@@ -129,7 +128,7 @@ This is where the magic starts
           "Time Emacs was started.")
 
         ;; Installed by `make install`
-        (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+        (add-to-list 'load-path "~/.emacs.d/deos/")
 
         (defmacro try-load (module)
           "Try to load the given module, logging an error if unable to load"
@@ -142,6 +141,7 @@ This is where the magic starts
         (try-load 'init-core)
         (try-load 'init-utils)
         (try-load 'init-theme)
+        (try-load 'init-writing)
         (try-load 'init-ibuffer)
         (try-load 'init-completion)
         (try-load 'init-develop)
@@ -151,7 +151,6 @@ This is where the magic starts
         (try-load 'init-ido)
         (try-load 'init-misc)
         (try-load 'init-lisp)
-        (try-load 'init-vc)
         (try-load 'init-git)
         (try-load 'init-dired)
         (try-load 'init-python)

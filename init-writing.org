@@ -1,0 +1,417 @@
+#+TITLE: Writing Module
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-writing)
+#+END_SRC
+
+Used more often than you'd think...
+
+#+BEGIN_SRC emacs-lisp
+(defun lod ()
+  "Well. This is disappointing."
+  (interactive)
+  (insert "ಠ_ಠ"))
+
+(global-set-key (kbd "C-c M-d") #'lod)
+#+END_SRC
+
+* Installing Markup Languages
+:PROPERTIES:
+:CUSTOM_ID: markup
+:END:
+
+Let's install markdown mode, since all of Github seems enamored with it.
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :mode (("\\`README\\.md\\'" . gfm-mode)
+         ("github\\.com.*\\.txt\\'" . gfm-mode)
+         ("\\.md\\'"          . markdown-mode)
+         ("\\.markdown\\'"    . markdown-mode))
+  :init
+  (setq markdown-enable-wiki-links t
+        markdown-italic-underscore t
+        markdown-make-gfm-checkboxes-buttons t
+        markdown-gfm-additional-languages '("sh"))
+  (add-hook 'markdown-mode-hook #'flyspell-mode))
+#+END_SRC
+
+YAML is used all over the place
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :ensure t)
+#+END_SRC
+
+Elasticsearch uses asciidoc everywhere for documentation, so let's install it
+
+#+BEGIN_SRC emacs-lisp
+(use-package adoc-mode
+  :ensure t)
+#+END_SRC
+
+* Functions for Skeleton Code
+:PROPERTIES:
+:CUSTOM_ID: skeletons
+:END:
+Skeletons are kind of like yasnippet, but they don't mess with my keybindings
+all over the place and take forever to load ಠ_ಠ
+
+#+BEGIN_SRC emacs-lisp
+(require 'skeleton)
+
+(define-skeleton eos/org-header
+  "Insert a standard header for org-mode files"
+  "Title: "
+  "#+TITLE: " str \n
+  "#+AUTHOR: " (user-full-name) \n
+  "#+EMAIL: " user-mail-address \n
+  "#+SETUPFILE: ~/eos/setupfiles/default.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+,* Introduction
+" \n)
+
+(define-skeleton eos/org-wrap-elisp
+  "Wrap text with #+BEGIN_SRC / #+END_SRC for the emacs-lisp code"
+  nil
+  > "#+BEGIN_SRC emacs-lisp" \n
+  > _ \n
+  > "#+END_SRC" \n)
+
+(define-skeleton eos/org-wrap-source
+  "Wrap text with #+BEGIN_SRC / #+END_SRC for a code type"
+  "Language: "
+  > "#+BEGIN_SRC " str \n
+  > _ \n
+  > "#+END_SRC" \n)
+
+(define-skeleton eos/es-make-index
+  "Insert boilerplate to create an index with `es-mode' syntax"
+  "Index name: "
+  "POST /" str \n
+  "{" \n
+  > "\"settings\": {" \n
+  > "\"index\": {" \n
+  > "\"number_of_shards\": 1," \n
+  > "\"number_of_replicas\": 0" \n
+  > "}" \n ;; index
+  > "}," \n ;; settings
+  > "\"mappings\": {" \n
+  > "\"" (skeleton-read "Type name: ") "\": {" \n
+  > "\"properties\": {" \n
+  > "\"body\": {" \n
+  > "\"type\": \"string\"" \n
+  > "}" \n ;; body
+  > "}" \n ;; properties
+  > "}" \n ;; type
+  > "}" \n ;; mappings
+  > "}" \n)
+
+(define-skeleton eos/java-try-catch
+  "Wrap code in a Java try/catch"
+  nil
+  > "try {" \n
+  > _
+  > "} catch (Exception e) {" \n
+  > "throw e;" \n
+  > "}" \n)
+#+END_SRC
+
+And now let's add a hydra for the skeletons
+
+#+BEGIN_SRC emacs-lisp
+(defhydra eos/hydra-skeleton nil
+  "Insert Skeleton"
+  ("e" eos/org-wrap-elisp "Wrap as elisp" :exit t)
+  ("s" eos/org-wrap-source "Wrap as source" :exit t)
+  ("i" eos/es-make-index "ES Index" :exit t)
+  ("h" eos/org-header "Org Header" :exit t)
+  ("t" eos/java-try-catch "Wrap with try/catch" :exit t))
+#+END_SRC
+
+* Inserting Abbreviations with Abbrev-mode
+:PROPERTIES:
+:CUSTOM_ID: abbrev
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package abbrev
+  :init (add-hook 'after-init-hook 'abbrev-mode)
+  :diminish abbrev-mode
+  :config
+  (define-abbrev-table
+    'global-abbrev-table
+    '(("ooc" "out of curiosity" nil 0)))
+  (define-abbrev-table
+    'org-mode-abbrev-table
+    '(("<el" "" 'eos/org-wrap-elisp 0))))
+#+END_SRC
+
+* Thesaurus
+:PROPERTIES:
+:CUSTOM_ID: thesaurus
+:END:
+
+I'm playing around with [[https://github.com/hpdeifel/synosaurus][Synosaurus]] for thesaurus lookup in Emacs, it's bound to
+=C-c s=
+
+#+BEGIN_SRC emacs-lisp
+(use-package synosaurus
+  :ensure t
+  :init
+  (setq-default synosaurus-backend 'synosaurus-backend-wordnet)
+  (add-hook 'after-init-hook #'synosaurus-mode))
+#+END_SRC
+
+* Numbering rectangles
+:PROPERTIES:
+:CUSTOM_ID: rectangle-numbering
+:END:
+Let's say you have a list like:
+
+#+BEGIN_SRC fundamental :tangle no
+First Item
+Second Item
+Third Item
+Fourth Item
+#+END_SRC
+
+And you want to number it to look like:
+
+#+BEGIN_SRC fundamental :tangle no
+1. First Item
+2. Second Item
+3. Third Item
+4. Fourth Item
+#+END_SRC
+
+This function allows you to hit =C-x r N= and specify the pattern
+and starting offset to number lines in rectangular-selection mode:
+
+#+BEGIN_SRC emacs-lisp
+(defun number-rectangle (start end format-string from)
+  "Delete (don't save) text in the region-rectangle, then number it."
+  (interactive
+   (list (region-beginning) (region-end)
+         (read-string "Number rectangle: "
+                      (if (looking-back "^ *") "%d. " "%d"))
+         (read-number "From: " 1)))
+  (save-excursion
+    (goto-char start)
+    (setq start (point-marker))
+    (goto-char end)
+    (setq end (point-marker))
+    (delete-rectangle start end)
+    (goto-char start)
+    (loop with column = (current-column)
+          while (and (<= (point) end) (not (eobp)))
+          for i from from   do
+          (move-to-column column t)
+          (insert (format format-string i))
+          (forward-line 1)))
+  (goto-char start))
+
+(global-set-key (kbd "C-x r N") 'number-rectangle)
+#+END_SRC
+
+* Nice Writing/Viewing helpers
+:PROPERTIES:
+:CUSTOM_ID: narrow
+:END:
+
+There's a nice helper from [[http://endlessparentheses.com/emacs-narrow-or-widen-dwim.html][Endless Parentheses]] that defines a do-what-I-mean
+version of the narrow-or-widen so I don't have to keep remembering which is
+which
+
+#+BEGIN_SRC emacs-lisp
+(defun eos/narrow-or-widen-dwim (p)
+  "Widen if buffer is narrowed, narrow-dwim otherwise.
+Dwim means: region, org-src-block, org-subtree, or
+defun, whichever applies first. Narrowing to
+org-src-block actually calls `org-edit-src-code'.
+
+With prefix P, don't widen, just narrow even if buffer
+is already narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning)
+                           (region-end)))
+        ((derived-mode-p 'org-mode)
+         ;; `org-edit-src-code' is not a real narrowing
+         ;; command. Remove this first conditional if
+         ;; you don't want it.
+         (cond ((ignore-errors (org-edit-src-code) t)
+                (delete-other-windows))
+               ((ignore-errors (org-narrow-to-block) t))
+               (t (org-narrow-to-subtree))))
+        ((derived-mode-p 'latex-mode)
+         (LaTeX-narrow-to-environment))
+        (t (narrow-to-defun))))
+
+(global-set-key (kbd "C-x C-n") #'eos/narrow-or-widen-dwim)
+#+END_SRC
+
+* Pasting help
+:PROPERTIES:
+:CUSTOM_ID: scpaste
+:END:
+
+Export an HTML version of the buffer and scp it somewhere
+
+#+BEGIN_SRC emacs-lisp
+(defvar fci-enabled? nil)
+(defvar fc-enabled? nil)
+(defun eos/surround-scpaste (fun &rest args)
+  (if (and (boundp 'fci-mode) fci-mode)
+      (progn
+        (setq fci-enabled? t)
+        (fci-mode -1))
+    (setq fci-enabled? nil))
+  (if (and (boundp flycheck-mode) flycheck-mode)
+      (progn
+        (setq fc-enabled? t)
+        (flycheck-mode -1))
+    (setq fc-enabled? nil))
+  (let ((result (apply fun args)))
+    (when fci-enabled?
+      (fci-mode 1))
+    (when fc-enabled?
+      (flycheck-mode 1))
+    result))
+
+(install-pkgs '(scpaste))
+(require 'scpaste)
+(setq scpaste-http-destination "http://writequit.org/paste"
+     scpaste-scp-destination "writequit.org:www/paste"
+     scpaste-user-name "dakrone"
+     scpaste-user-address "http://writequit.org/")
+;; Disable fill-column-indicator while scpasting
+(advice-add 'scpaste :around #'eos/surround-scpaste)
+#+END_SRC
+
+* Escaping strings
+:PROPERTIES:
+:CUSTOM_ID: h:d631d353-3dfb-4daa-9b87-04e0343cc09a
+:END:
+
+String-edit is a nice mode for editing strings without dealing with all the
+escaping. I bind this to =C-c "= to make it similar to Org-mode's =C-c '=
+binding.
+
+#+BEGIN_SRC emacs-lisp
+(use-package string-edit
+  :ensure t
+  :bind (("C-c \"" . string-edit-at-point)))
+#+END_SRC
+
+* Respecting whitespace with fill-column and whitespace-mode
+:PROPERTIES:
+:CUSTOM_ID: respect-the-width
+:END:
+
+Emacs needs to respect whitespace. This means no trailing spaces, keep things
+within 80-columns (or whatever the fill-column is) and all that.
+
+I have to hack something around this to make it fixed for org->html exports
+
+#+BEGIN_SRC emacs-lisp
+(use-package fill-column-indicator
+  :ensure t
+  :config
+  ;; fix for org -> html export
+  (defun fci-mode-override-advice (&rest args))
+  (use-package org)
+  (advice-add 'org-html-fontify-code :around
+              (lambda (fun &rest args)
+                (advice-add 'fci-mode :override #'fci-mode-override-advice)
+                (let ((result  (apply fun args)))
+                  (advice-remove 'fci-mode #'fci-mode-override-advice)
+                  result)))
+
+  (defvar eos/fci-disabled nil)
+  (make-variable-buffer-local 'eos/fci-disabled)
+  ;; Add a hook that disables fci if enabled when the window changes and it
+  ;; isn't wide enough to display it.
+  (defun eos/maybe-disable-fci ()
+    (interactive)
+    ;; Disable FCI if necessary
+    (when (and fci-mode
+               (< (window-width) (or fci-rule-column fill-column)))
+      (fci-mode -1)
+      (setq-local eos/fci-disabled t))
+    ;; Enable FCI if necessary
+    (when (and eos/fci-disabled
+               (eq fci-mode nil)
+               (> (window-width) (or fci-rule-column fill-column)))
+      (fci-mode 1)
+      (setq-local eos/fci-disabled nil)))
+
+  (defun eos/add-fci-disabling-hook ()
+    (interactive)
+    (add-hook 'window-configuration-change-hook
+              #'eos/maybe-disable-fci))
+  (add-hook 'prog-mode-hook #'eos/add-fci-disabling-hook))
+#+END_SRC
+
+There's also the built-in whitespace mode, which I use to highlight things over
+the fill-column (80 in most programming modes, 140 in Java :P)
+
+#+BEGIN_SRC emacs-lisp
+;; A subset, only training lines and whitespace
+(setq whitespace-style '(spaces tabs newline space-mark tab-mark newline-mark))
+
+(setq whitespace-display-mappings
+      ;; all numbers are Unicode codepoint in decimal.
+      '(;;(space-mark 32 [183] [46])
+        ;; (newline-mark 10 [172 10]) ;; the paragraph sign
+        (newline-mark 10 [172 10]) ;; mathematical "not"
+        (tab-mark 9 [187 9] [92 9])))
+
+(defun eos/turn-on-whitespace-mode ()
+  (interactive)
+  (setq-local whitespace-line-column fill-column)
+  (whitespace-mode +1)
+  (diminish 'whitespace-mode)
+  (whitespace-newline-mode 1)
+  (diminish 'whitespace-newline-mode))
+
+(add-hook 'prog-mode-hook #'eos/turn-on-whitespace-mode)
+
+#+END_SRC
+
+And a helper to turn off whitespace mode when exporting org documents
+
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :config
+  (advice-add 'org-html-fontify-code :around
+              (lambda (fun &rest args)
+                (whitespace-mode -1)
+                (let ((result  (apply fun args)))
+                  (whitespace-mode +1)
+                  result))))
+#+END_SRC
+
+* Highlighting indentation
+
+There are basically two ways to do this, either with [[https://github.com/DarthFennec/highlight-indent-guides][highlight-indent-guides]] or with
+[[https://github.com/antonj/Highlight-Indentation-for-Emacs][highlight-indentation]]. The names are confusing, and they each have pros and cons, so it's hard to
+tell which is the better option...
+
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :disabled t
+  :init
+  (setq highlight-indent-guides-method 'character)
+  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode))
+#+END_SRC

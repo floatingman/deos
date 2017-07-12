@@ -1,7 +1,7 @@
 #+TITLE: Elm
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package elm-mode

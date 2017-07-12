@@ -1,7 +1,7 @@
 #+TITLE: Grep
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default grep-highlight-matches t

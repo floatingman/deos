@@ -1,7 +1,7 @@
 #+TITLE:   Dev Module
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+begin_src emacs-lisp :tangle yes
 (provide 'init-develop)
@@ -221,7 +221,7 @@ Trying out cedet again. Be sure to run make in the override/cedet directory
 (autoload 'wisent-java-default-setup "semantic/wisent/java"
   "Hook run to setup Semantic in `java-mode'." nil nil)
 
-(defun eos/setup-semantic-mode ()
+(defun deos/setup-semantic-mode ()
   (interactive)
   (use-package semantic
     :init
@@ -257,8 +257,8 @@ Exit the save between databases if there is user input."
                    (semanticdb-save-db db t))
                  semanticdb-database-list)))))))
 
-(add-hook 'c-mode-hook #'eos/setup-semantic-mode)
-(add-hook 'java-mode-hook #'eos/setup-semantic-mode)
+(add-hook 'c-mode-hook #'deos/setup-semantic-mode)
+(add-hook 'java-mode-hook #'deos/setup-semantic-mode)
 (add-hook 'emacs-lisp-mode-hook #'semantic-mode)
 #+end_src
 

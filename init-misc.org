@@ -1,7 +1,7 @@
 #+TITLE: Misc Config
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+begin_src emacs-lisp :tangle yes
 ;; No need for ~ files when editing

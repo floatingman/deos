@@ -18,7 +18,7 @@
   (ido-mode 1)
   (use-package ido-ubiquitous
     :ensure t
-    :init (ido-ubiquitous 1))
+    :init (ido-ubiquitous-mode 1))
   (use-package ido-vertical-mode
     :ensure t
     :init (ido-vertical-mode 1))

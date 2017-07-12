@@ -6,6 +6,7 @@ init-completion.el \
 init-helm.el \
 init-theme.el \
 init-editing.el \
+init-writing.el \
 init-dired.el \
 init-ivy.el \
 init-ido.el \

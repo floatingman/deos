@@ -1,7 +1,7 @@
 #+TITLE: EMACS CORE CONFIG
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp
 (provide 'init-core)

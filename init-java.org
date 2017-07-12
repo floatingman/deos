@@ -1,7 +1,7 @@
 #+TITLE:   Java Dev Module
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
-#+SETUPFILE: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+begin_src emacs-lisp :tangle yes
 (provide 'init-java)
@@ -286,5 +286,5 @@ active development, so I'm trying it out.
   (when deos/use-meghanada
     (add-hook 'java-mode-hook #'meghanada-mode)
     (add-hook 'java-mode-hook 'flycheck-mode)
-    (bind-key "C-c M-." 'meghanada-jump-declaration java-mode-map)))
+    ))
 #+END_SRC
