@@ -2,3 +2,8 @@ initialize.sh
 install.sh
 
 .DS_Store
+*.elc
+*.el
+*.el~
+override/org-mode/doc/org
+override/org-mode/doc/org-version.inc
