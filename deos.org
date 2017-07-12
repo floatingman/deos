@@ -139,7 +139,7 @@ This is where the magic starts
   (try-load 'init-paredit)
   (try-load 'init-editing)
   (try-load 'init-elm)
-  (try-load 'init-ido-mode)
+  (try-load 'init-ido)
   ;;(try-load 'init-snippets)
   (try-load 'init-misc)
   (try-load 'init-lisp)

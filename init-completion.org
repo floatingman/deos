@@ -1,4 +1,4 @@
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle yes
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initals t)
 (setq completion-cycle-threshold 5)

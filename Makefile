@@ -8,7 +8,7 @@ init-theme.el \
 init-editing.el \
 init-dired.el \
 init-ivy.el \
-init-ido-mode.el \
+init-ido.el \
 init-elm.el \
 init-flycheck.el \
 init-git.el \
