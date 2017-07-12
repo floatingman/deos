@@ -1,0 +1,6 @@
+[submodule "snippets"]
+	path = snippets
+	url = git@github.com:floatingman/yasnippet-snippets
+[submodule "override/cedet"]
+	path = override/cedet
+	url = https://git.code.sf.net/p/cedet/git
