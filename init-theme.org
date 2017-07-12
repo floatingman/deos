@@ -1,7 +1,7 @@
 adw#+TITLE:   Emacs Theme
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
-#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 * Appearances can be deceiving
 #+BEGIN_SRC emacs-lisp

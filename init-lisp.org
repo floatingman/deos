@@ -1,3 +1,8 @@
+#+TITLE: Lisp
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/deos.setup
+
 #+begin_src emacs-lisp :tangle yes
 (use-package eldoc
   :ensure t

@@ -62,9 +62,9 @@ This is where the magic starts
         (setq debug-on-error t)
         (setq debug-on-quit t)
 
-        ;; Load development version of cedet
-        (when (file-exists-p "~/.emacs.d/override/cedet/cedet-devel-load.el")
-          (load "~/.emacs.d/override/cedet/cedet-devel-load.el"))
+        ;; Load development version of cedet (doesn't work)
+        ;;(when (file-exists-p "~/.emacs.d/override/cedet/cedet-devel-load.el")
+        ;;  (load "~/.emacs.d/override/cedet/cedet-devel-load.el"))
 
         (when (file-exists-p "~/.emacs.d/override/org-mode/lisp")
           (add-to-list 'load-path "~/.emacs.d/override/org-mode/lisp")

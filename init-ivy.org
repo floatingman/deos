@@ -1,7 +1,7 @@
 #+TITLE:   Ivy Module
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
-#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 * Ivy Module
 #+BEGIN_SRC emacs-lisp :tangle yes

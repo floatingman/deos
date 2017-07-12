@@ -1,3 +1,8 @@
+#+TITLE: Editing
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/deos.setup
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package unfill
   :ensure t)

@@ -1,3 +1,8 @@
+#+TITLE: Utilities
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/deos.setup
+
 #+begin_src emacs-lisp :tangle yes
 (if (fboundp 'with-eval-after-load)
     (defalias 'after-load 'with-eval-after-load)

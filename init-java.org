@@ -1,7 +1,7 @@
 #+TITLE:   Java Dev Module
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
-#+SETUPFILES: ~/deos/setupfiles/deos.setup
+#+SETUPFILE: ~/deos/setupfiles/deos.setup
 
 #+begin_src emacs-lisp :tangle yes
 (provide 'init-java)
