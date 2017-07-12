@@ -9,8 +9,11 @@ init-editing.el \
 init-dired.el \
 init-ivy.el \
 init-ido.el \
+init-lisp.el \
+init-develop.el \
+init-java.el \
+init-misc.el \
 init-elm.el \
-init-flycheck.el \
 init-git.el \
 init-grep.el \
 init-ibuffer.el \

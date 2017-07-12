@@ -1,7 +1,7 @@
 #+TITLE: Daniel Newman's Literate Emacs Configuration
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
-#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+#+SETUPFILE: ~/deos/setupfiles/deos.setup
 
 * The Beginning
 :PROPERTIES:
@@ -136,7 +136,7 @@ This is where the magic starts
   (try-load 'init-ibuffer)
   (try-load 'init-completion)
   (try-load 'init-flycheck)
-  (try-load 'init-paredit)
+  (try-load 'init-develop)
   (try-load 'init-editing)
   (try-load 'init-elm)
   (try-load 'init-ido)
