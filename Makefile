@@ -28,6 +28,7 @@ clean:
 	rm -fv *.el
 	rm -fv *.elc
 	rm -fv sh/*.sh
+	rm -rfv ~/.emacs.d
 
 init: initialize.sh
 initialize.sh: deos.org
