@@ -1,0 +1,1320 @@
+#+TITLE: EMACS CORE CONFIG
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-core)
+#+END_SRC
+
+* Core Configuration Setup
+:PROPERTIES:
+:CUSTOM_ID: core-config
+:END:
+This is the place where a lot of default config is set. Most variables
+and functions should be in this file
+
+It's about to get personal
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Daniel Newman"
+      user-mail-address "dwnewman78@gmail.com")
+#+END_SRC
+
+UTF-8 all the way!
+#+begin_src emacs-lisp :tangle yes
+(set-charset-priority 'unicode)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+#+end_src
+
+Turn on syntax highlighting for all buffers:
+
+#+BEGIN_SRC emacs-lisp
+(global-font-lock-mode t)
+#+END_SRC
+
+Raise the maximum number of logs in the =*Messages*= buffer:
+
+#+BEGIN_SRC emacs-lisp
+(setq message-log-max 16384)
+#+END_SRC
+
+We don't really need to garbage collect as frequently as Emacs would like to by
+default, so set the threshold up higher:
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold (* 50 1024 1024)) ;; 50 mb
+;; Allow font-lock-mode to do background parsing
+(setq jit-lock-defer-time nil
+      ;; jit-lock-stealth-nice 0.1
+      jit-lock-stealth-time 1
+      jit-lock-stealth-verbose nil)
+#+END_SRC
+
+Wait a bit longer than the default (0.5 seconds) before assuming Emacs is idle
+
+#+BEGIN_SRC emacs-lisp
+(setq idle-update-delay 2)
+#+END_SRC
+
+Setup some variables for use in other config files
+
+#+begin_src emacs-lisp :tangle yes
+(defconst *spell-check-support-enabled* t) ;; Enable with t if you prefer
+(defconst *is-a-mac* (eq system-type 'darwin))
+(defconst *is-windows* (eq system-type 'windows-nt))
+(defconst *is-linux* (eq system-type 'gnu/linux))
+(defconst *is-gui* (not (eq window-system nil)))
+(defvar running-alternate-emacs nil)
+#+end_src
+
+Make gnutls a bit safer, the default is an absurdly low 256
+
+#+BEGIN_SRC emacs-lisp
+(setq gnutls-min-prime-bits 4096)
+#+END_SRC
+
+When I select a region and start typing, just delete the region automatically.
+This ends up working great with =expand-region=
+
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC
+
+Don't warn me about large files unless they're at least 25mb:
+
+#+BEGIN_SRC emacs-lisp
+(setq large-file-warning-threshold (* 25 1024 1024))
+#+END_SRC
+
+If you change buffer, or focus, disable the current buffer's mark:
+
+#+BEGIN_SRC emacs-lisp
+(transient-mark-mode 1)
+#+END_SRC
+
+Don't indicate empty lines or the end of a buffer with visual
+marks (the lines are cleaned up automatically anyway)
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indicate-empty-lines nil)
+(setq-default indicate-buffer-boundaries nil)
+#+END_SRC
+
+Turn off all kinds of modes, I don't need the menu bar, or the tool bar:
+
+#+BEGIN_SRC emacs-lisp
+(when (functionp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (functionp 'set-scroll-bar-mode)
+  (set-scroll-bar-mode 'nil))
+(when (functionp 'tooltip-mode)
+  (tooltip-mode -1))
+(when (functionp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (functionp 'blink-cursor-mode)
+  (blink-cursor-mode -1))
+#+END_SRC
+
+Beep bop boop I am a robot no more. Don't show the startup message, I
+know Emacs is starting.
+
+#+BEGIN_SRC emacs-lisp
+(setq ring-bell-function (lambda ()))
+(setq inhibit-startup-screen t)
+#+END_SRC
+
+Why would you not want to know lines/columns in your mode-line?
+
+#+BEGIN_SRC emacs-lisp
+(line-number-mode 1)
+(column-number-mode 1)
+#+END_SRC
+
+Ignore case when using completion for file names:
+
+#+BEGIN_SRC emacs-lisp
+(setq read-file-name-completion-ignore-case t)
+#+END_SRC
+
+Nobody likes to have to type "yes" to questions, so change it to
+just hitting the =y= key to confirm:
+
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+Confirm before killing emacs, but only on graphical sessions
+
+#+BEGIN_SRC emacs-lisp
+(when (window-system)
+  (setq confirm-kill-emacs 'yes-or-no-p))
+#+END_SRC
+
+It's much easier to move around lines based on how they are
+displayed, rather than the actual line. This helps a ton with long
+log file lines that may be wrapped:
+
+#+BEGIN_SRC emacs-lisp
+(setq line-move-visual t)
+#+END_SRC
+
+Hide the mouse while typing:
+
+#+BEGIN_SRC emacs-lisp
+(setq make-pointer-invisible t)
+#+END_SRC
+
+Set up the fill-column to 80 characters and set tab width to 2
+
+#+BEGIN_SRC emacs-lisp
+(setq-default fill-column 80)
+(setq-default default-tab-width 2)
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+
+Fix some weird color escape sequences
+
+#+BEGIN_SRC emacs-lisp
+(setq system-uses-terminfo nil)
+#+END_SRC
+
+Resolve symlinks:
+
+#+BEGIN_SRC emacs-lisp
+(setq-default find-file-visit-truename t)
+#+END_SRC
+
+Require a newline at the end of files:
+
+#+BEGIN_SRC emacs-lisp
+(setq require-final-newline t)
+#+END_SRC
+
+Uniquify buffers, using angle brackets, so you get =foo= and
+=foo<2>=:
+
+#+BEGIN_SRC emacs-lisp
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
+#+END_SRC
+
+Search (and search/replace) using regex by default, since that's
+usually what I want to do:
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "M-%") 'query-replace-regexp)
+;; This is usually bound to `C-M-l', but that locks the screen on linux, so bind
+;; it to something I can use
+(global-set-key (kbd "M-L") 'reposition-window)
+#+END_SRC
+
+Just kill this buffer, don't prompt me. I'll use helm if I want to kill a
+different buffer
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x k") #'kill-this-buffer)
+#+END_SRC
+
+Single space still ends a sentence:
+
+#+BEGIN_SRC emacs-lisp
+(setq sentence-end-double-space nil)
+#+END_SRC
+
+Split windows a bit better (don't split horizontally, I have a
+widescreen :P)
+
+#+BEGIN_SRC emacs-lisp
+(setq split-height-threshold nil)
+(setq split-width-threshold 180)
+#+END_SRC
+
+Make sure auto automatically rescan for imenu changes:
+
+#+BEGIN_SRC emacs-lisp
+(set-default 'imenu-auto-rescan t)
+#+END_SRC
+
+Seed the random number generator:
+
+#+BEGIN_SRC emacs-lisp
+(random t)
+#+END_SRC
+
+Switch to unified diffs by default:
+
+#+BEGIN_SRC emacs-lisp
+(setq diff-switches "-u")
+#+END_SRC
+
+Turn on auto-fill mode in text buffers:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+(use-package diminish
+  :init (diminish 'auto-fill-function ""))
+#+END_SRC
+
+Set the internal calculator not to go to scientific form quite so quickly:
+
+#+BEGIN_SRC emacs-lisp
+(setq calc-display-sci-low -5)
+#+END_SRC
+
+Bury the =*scratch*= buffer, never kill it:
+
+#+BEGIN_SRC emacs-lisp
+(defadvice kill-buffer (around kill-buffer-around-advice activate)
+  (let ((buffer-to-kill (ad-get-arg 0)))
+    (if (equal buffer-to-kill "*scratch*")
+        (bury-buffer)
+      ad-do-it)))
+#+END_SRC
+
+These are some settings for version control stuff.
+
+Start a server if not running, but a only for gui-only:
+
+#+BEGIN_SRC emacs-lisp
+;; Lame, server has bad autoloads :(
+(require 'server nil t)
+(use-package server
+  :if window-system
+  :init
+  (when (not (server-running-p server-name))
+    (server-start)))
+#+END_SRC
+
+Prettify all the symbols, if available (an Emacs 24.4 feature):
+
+#+BEGIN_SRC emacs-lisp
+(when (boundp 'global-prettify-symbols-mode)
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (push '("lambda" . ?λ) prettify-symbols-alist)))
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (push '("fn" . ?ƒ) prettify-symbols-alist)))
+  (global-prettify-symbols-mode +1))
+#+END_SRC
+
+Emacs (foolishly) defaults to adding the =--insecure= flag. It also supports the
+(incredibly broken) SSL version 3. What are you thinking Emacs!?!
+
+Here I set it back to a *sane* value:
+
+#+BEGIN_SRC emacs-lisp
+(setq tls-program
+      ;; Defaults:
+      ;; '("gnutls-cli --insecure -p %p %h"
+      ;;   "gnutls-cli --insecure -p %p %h --protocols ssl3"
+      ;;   "openssl s_client -connect %h:%p -no_ssl2 -ign_eof")
+      '(;;"gnutls-cli -p %p %h"
+        "openssl s_client -connect %h:%p -no_ssl2 -no_ssl3 -ign_eof"))
+#+END_SRC
+
+Desktop Save Mode[fn:18:
+http://www.gnu.org/software/emacs/manual/html_node/elisp/Desktop-Save-Mode.html]
+is the session management system for Emacs; it holds state of open buffers and
+session variables across instantiation of Emacs, which is super useful in mobile
+setups like laptops which reboot a lot. To make startup sane, I'm choosing to
+eagerly restore the 10 most recently used buffers on startup, and then in Idle
+the system will restore the remaining buffers.
+
+I've recently disabled this, because I enjoy starting clean when I restart
+Emacs, so it's nice to have the option if desired..
+
+Desktop+ will automatically save the desktop when Emacs exits
+
+#+BEGIN_src emacs-lisp
+;; Disabled for now
+;; (desktop-save-mode 1)
+;; load all values eagerly
+(setq desktop-restore-eager 10)
+;; Don't save TRAMP, ftp, or "KILL" buffers
+(setq desktop-files-not-to-save "\\(^/[^/:]*:\\|(ftp)$\\|KILL\\)")
+;; Don't restore different frames, only restore the one frame
+(setq desktop-restore-frames nil)
+
+(use-package desktop+
+  :ensure t
+  :disabled t
+  :init
+  (defun eos/load-default-desktop ()
+    "Load the default EOS desktop, assuming one has been saved
+with the name `default'."
+    (interactive)
+    (desktop+-load "default")
+    (message "Loaded \"default\" desktop."))
+
+  (add-hook 'after-init-hook #'eos/load-default-desktop))
+#+END_SRC
+
+By default, my machine drops me in to a =*scratch*= buffer. Originally designed
+to be an lisp playground that you could dive right in to on start up, it's sort
+of eclipsed that for me in to a general purpose buffer, where I will put things
+like elisp I am prototyping or playtesting, small snippets of code that I want
+to use in dayjob, etc. But when you kill emacs, or it dies, that buffer
+disappears. This code will save the Scratch buffer every minute and restores it
+on Emacs startup.
+
+#+BEGIN_src emacs-lisp
+(defun save-persistent-scratch ()
+  "Write the contents of *scratch* to the file name
+`persistent-scratch-file-name'."
+  (with-current-buffer (get-buffer-create "*scratch*")
+    (write-region (point-min) (point-max) "~/.emacs.d/persistent-scratch")))
+
+(defun load-persistent-scratch ()
+  "Load the contents of `persistent-scratch-file-name' into the
+  scratch buffer, clearing its contents first."
+  (if (file-exists-p "~/.emacs-persistent-scratch")
+      (with-current-buffer (get-buffer "*scratch*")
+        (delete-region (point-min) (point-max))
+        (insert-file-contents "~/.emacs.d/persistent-scratch"))))
+
+;; (add-hook 'after-init-hook 'load-persistent-scratch)
+;; (add-hook 'kill-emacs-hook 'save-persistent-scratch)
+#+END_SRC
+
+I restart emacs a lot, and it is nice to have the history of things like =M-x=
+saved across those sessions. =savehist= mode gives us that.
+
+#+begin_src emacs-lisp
+(require 'savehist)
+(setq savehist-file (concat user-emacs-directory "savehist"))
+(savehist-mode 1)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+(setq-default save-place t)
+#+end_src
+
+Toggle line wrapping with =C-x C-l=
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-l") #'toggle-truncate-lines)
+#+end_src
+
+Set up keeping track of recent files, up to 2000 of them.
+
+If emacs has been idle for 10 minutes, clean up the recent files. Also save the
+list of recent files every 5 minutes.
+
+#+BEGIN_SRC emacs-lisp
+(setq recentf-max-saved-items 300
+      recentf-exclude '("/auto-install/" ".recentf" "/repos/" "/elpa/"
+                        "\\.mime-example" "\\.ido.last" "COMMIT_EDITMSG"
+                        ".gz" "~$" "/tmp/" "/ssh:" "/sudo:" "/scp:")
+      recentf-auto-cleanup 600)
+
+;; Enable when running interactively
+(when (not noninteractive) (recentf-mode 1))
+
+(defun recentf-save-list ()
+  "Save the recent list.
+Load the list from the file specified by `recentf-save-file',
+merge the changes of your current session, and save it back to
+the file."
+  (interactive)
+  (let ((instance-list (cl-copy-list recentf-list)))
+    (recentf-load-list)
+    (recentf-merge-with-default-list instance-list)
+    (recentf-write-list-to-file)))
+
+(defun recentf-merge-with-default-list (other-list)
+  "Add all items from `other-list' to `recentf-list'."
+  (dolist (oitem other-list)
+    ;; add-to-list already checks for equal'ity
+    (add-to-list 'recentf-list oitem)))
+
+(defun recentf-write-list-to-file ()
+  "Write the recent files list to file.
+Uses `recentf-list' as the list and `recentf-save-file' as the
+file to write to."
+  (condition-case error
+      (with-temp-buffer
+        (erase-buffer)
+        (set-buffer-file-coding-system recentf-save-file-coding-system)
+        (insert (format recentf-save-file-header (current-time-string)))
+        (recentf-dump-variable 'recentf-list recentf-max-saved-items)
+        (recentf-dump-variable 'recentf-filter-changer-current)
+        (insert "\n \n;;; Local Variables:\n"
+                (format ";;; coding: %s\n" recentf-save-file-coding-system)
+                ";;; End:\n")
+        (write-file (expand-file-name recentf-save-file))
+        (when recentf-save-file-modes
+          (set-file-modes recentf-save-file recentf-save-file-modes))
+        nil)
+    (error
+     (warn "recentf mode: %s" (error-message-string error)))))
+#+END_SRC
+
+Change the clipboard settings to better integrate into Linux:
+
+#+BEGIN_SRC emacs-lisp
+(setq x-select-enable-clipboard t)
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+#+END_SRC
+
+All restoring window placement with Emacs' built-in =winner-mode=
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook #'winner-mode)
+#+END_SRC
+
+Save whatever's in the current (system) clipboard before replacing it with the
+Emacs' text.
+
+#+BEGIN_SRC emacs-lisp
+(setq save-interprogram-paste-before-kill t)
+#+END_SRC
+
+Settings for what to do with temporary files. I like to put them all in
+=~/.emacs_backups= if it exists, which puts them in a single place instead of
+littering everywhere.
+
+#+BEGIN_SRC emacs-lisp
+;; delete-auto-save-files
+(setq delete-auto-save-files t)
+;; Create the directory for backups if it doesn't exist
+(when (not (file-exists-p "~/.emacs_backups"))
+  (make-directory "~/.emacs_backups"))
+
+(setq-default backup-directory-alist
+              '((".*" . "~/.emacs_backups")))
+(setq auto-save-file-name-transforms
+      '((".*" "~/.emacs_backups/" t)))
+
+;; delete old backups silently
+(setq delete-old-versions t)
+#+END_SRC
+
+Need to make sure the directory exists in the initializing shell script, so this
+goes into =core-eos.sh=
+
+#+BEGIN_SRC sh :tangle sh/core-deos.sh
+mkdir -p ~/.emacs_backups
+#+END_SRC
+
+Before saving a buffer, cleans up whitespace only for the lines that I have
+touched. I used to have:
+
+: (add-hook 'before-save-hook #'delete-trailing-whitespace)
+
+But this ends up deleting a looot of whitespace in my work codebase ಠ_ಠ, so now
+I use [[https://github.com/lewang/ws-butler/][ws-butler]].
+
+#+BEGIN_SRC emacs-lisp
+(use-package ws-butler
+  :ensure t
+  :diminish ws-butler-mode
+  :init
+  (add-hook 'prog-mode-hook #'ws-butler-mode)
+  (add-hook 'org-mode-hook #'ws-butler-mode)
+  (add-hook 'text-mode-hook #'ws-butler-mode))
+#+END_SRC
+
+On the other hand, auto-indenting can be really handy.
+
+#+BEGIN_SRC emacs-lisp
+(use-package auto-indent-mode
+  :ensure t)
+#+END_SRC
+
+Let's configure some popup rules, so buffers don't take over the whole workspace
+when they are popped up. I do this with Popwin
+
+#+BEGIN_SRC emacs-lisp
+(use-package popwin
+  :ensure t
+  :commands popwin-mode
+  :init (popwin-mode 1)
+  :config
+  (progn
+    (defvar popwin:special-display-config-backup popwin:special-display-config)
+    (setq display-buffer-function 'popwin:display-buffer)
+
+    ;; remove compilation-mode from popwin, I want a full window
+    (setq popwin:special-display-config
+          (remove '(compilation-mode :noselect t) popwin:special-display-config))
+
+    ;; basic
+    (push '("*Help*" :stick t) popwin:special-display-config)
+    (push '("*Pp Eval Output*" :stick t) popwin:special-display-config)
+
+    ;; dictionaly
+    (push '("*dict*" :stick t) popwin:special-display-config)
+    (push '("*sdic*" :stick t) popwin:special-display-config)
+
+    ;; popwin for slime
+    (push '(slime-repl-mode :stick t) popwin:special-display-config)
+
+    ;; man
+    (push '(Man-mode :stick t :height 20) popwin:special-display-config)
+
+    ;; Elisp
+    (push '("*ielm*" :stick t) popwin:special-display-config)
+    (push '("*eshell pop*" :stick t) popwin:special-display-config)
+
+    ;; python
+    (push '("*Python*"   :stick t) popwin:special-display-config)
+    (push '("*Python Help*" :stick t :height 20) popwin:special-display-config)
+    (push '("*jedi:doc*" :stick t :noselect t) popwin:special-display-config)
+
+    ;; Haskell
+    (push '("*haskell*" :stick t) popwin:special-display-config)
+    (push '("*GHC Info*") popwin:special-display-config)
+
+    ;; git-gutter
+    (push '("*git-gutter:diff*" :width 0.5 :stick t)
+          popwin:special-display-config)
+
+    (push '("*Occur*" :stick t) popwin:special-display-config)
+
+    ;; prodigy
+    (push '("*prodigy*" :stick t) popwin:special-display-config)
+
+    ;; org-mode
+    (push '("*Org tags*" :stick t :height 30)
+          popwin:special-display-config)
+
+    ;; Completions
+    (push '("*Completions*" :stick t :noselect t) popwin:special-display-config)
+
+    ;; ggtags
+    (push '("*ggtags-global*" :stick t :noselect t :height 30) popwin:special-display-config)
+
+    ;; async shell commands
+    (push '("*Async Shell Command*" :stick t) popwin:special-display-config)
+
+    (global-set-key (kbd "C-h e") 'popwin:messages)))
+#+END_SRC
+
+Usually =M-SPC= is bound to ~just-one-space~, but [[https://github.com/jcpetkovich/shrink-whitespace.el][shrink-whitespace]] is actually
+a better alternative because it can shrink space between lines.
+
+Thanks to
+http://pragmaticemacs.com/emacs/delete-blank-lines-and-shrink-whitespace/ for
+the link to this package.
+
+#+BEGIN_SRC emacs-lisp
+(use-package shrink-whitespace
+  :ensure t
+  :bind ("M-SPC" . shrink-whitespace))
+#+END_SRC
+
+Extended bookmarks, which I've started used for dired buffers and so on. I
+always have a bookmark for my Downloads folder as well as some TRAMP bookmarks
+for my webserver, in case I want to manually copy things around.
+
+#+BEGIN_SRC emacs-lisp
+(use-package bookmark+
+  :ensure t
+  :defer 10
+  :init (setq bmkp-replace-EWW-keys-flag t)
+  :config
+  (setq bookmark-version-control t
+        ;; auto-save bookmarks
+        bookmark-save-flag 1))
+#+END_SRC
+
+Anzu shows the number of search hits in the modeline, which is handy.
+
+It can also be used for a "refactor-like" thing similar to query-replace.
+
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t
+  :defer t
+  :bind ("M-%" . anzu-query-replace-regexp)
+  :config
+  (progn
+    (use-package thingatpt)
+    (setq anzu-mode-lighter ""
+          ;; spaceline already takes care of this
+          anzu-cons-mode-line-p nil)
+    (set-face-attribute 'anzu-mode-line nil :foreground "yellow")))
+
+(add-hook 'prog-mode-hook #'anzu-mode)
+(add-hook 'org-mode-hook #'anzu-mode)
+#+END_SRC
+
+Also, add a thing for yanking the entire symbol into the query while searching:
+
+#+BEGIN_SRC emacs-lisp
+(defun isearch-yank-symbol ()
+  (interactive)
+  (isearch-yank-internal (lambda () (forward-symbol 1) (point))))
+
+(define-key isearch-mode-map (kbd "C-M-w") #'isearch-yank-symbol)
+#+END_SRC
+
+Automagically resizes the windows to be the golden ratio (1.618), nice when
+using a big font size and I need more eshell space
+
+#+BEGIN_SRC emacs-lisp
+(use-package golden-ratio
+  :ensure t
+  :diminish golden-ratio-mode
+  :defer t
+  :init
+  (add-hook 'ediff-before-setup-windows-hook (lambda () (golden-ratio-mode -1)))
+  (add-hook 'ediff-quit-hook (lambda () (golden-ratio-mode 1)))
+  :config
+  ;; Default is 1.0, but I find this adjust just slightly less, which is nice
+  (setq golden-ratio-adjust-factor .9)
+
+  (defun eos/helm-alive-p ()
+    (if (boundp 'helm-alive-p)
+        (symbol-value 'helm-alive-p)))
+  (defun eos/ispell-running-p ()
+    (and (boundp 'ispell-choices-buffer)
+         (get-buffer ispell-choices-buffer)))
+
+  ;; Inhibit helm and ispell buffers
+  (setq golden-ratio-inhibit-functions '(eos/helm-alive-p eos/ispell-running-p))
+
+  (setq golden-ratio-exclude-buffer-regexp '("\\`\\*[Hh]elm.*\\*\\'")
+        golden-ratio-exclude-buffer-names '("*Org Select*")
+        golden-ratio-exclude-modes '(messages-buffer-mode
+                                     fundamental-mode
+                                     ediff-mode
+                                     calendar-mode
+                                     wget-mode
+                                     calc-mode
+                                     calc-trail-mode
+                                     mu4e-view-mode
+                                     mu4e-headers-mode
+                                     magit-popup-mode)
+        golden-ratio-recenter t))
+#+END_SRC
+
+Add a generic cleanup method that can be called everywhere, bound to =C-c n=:
+
+#+BEGIN_SRC emacs-lisp
+(defun untabify-buffer ()
+  (interactive)
+  (untabify (point-min) (point-max)))
+
+(defun indent-buffer ()
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defvar bad-cleanup-modes '(python-mode yaml-mode)
+  "List of modes where `cleanup-buffer' should not be used")
+
+(defun cleanup-buffer ()
+  "Perform a bunch of operations on the whitespace content of a
+buffer. If the buffer is one of the `bad-cleanup-modes' then no
+re-indenting and un-tabification is done."
+  (interactive)
+  (unless (member major-mode bad-cleanup-modes)
+    (progn
+      (indent-buffer)
+      (untabify-buffer)))
+  (delete-trailing-whitespace))
+
+;; Perform general cleanup.
+(global-set-key (kbd "C-c n") #'cleanup-buffer)
+#+END_SRC
+
+Read-only viewing of files is quite useful. Keybindings for paging through stuff
+in a less/vim manner.
+
+Make sure you install =mupdf= for the best quality PDFs on Linux and OSX. (=brew
+install mupdf= on osx)
+
+#+BEGIN_SRC emacs-lisp
+(use-package view
+  :defer 15
+  :config
+  (progn
+    (defun View-goto-line-last (&optional line)
+      "goto last line"
+      (interactive "P")
+      (goto-line (line-number-at-pos (point-max))))
+
+    (define-key view-mode-map (kbd "e") 'View-scroll-half-page-forward)
+    (define-key view-mode-map (kbd "u") 'View-scroll-half-page-backward)
+
+    ;; less like
+    (define-key view-mode-map (kbd "N") 'View-search-last-regexp-backward)
+    (define-key view-mode-map (kbd "?") 'View-search-regexp-backward?)
+    (define-key view-mode-map (kbd "g") 'View-goto-line)
+    (define-key view-mode-map (kbd "G") 'View-goto-line-last)
+    ;; vi/w3m like
+    (define-key view-mode-map (kbd "h") 'backward-char)
+    (define-key view-mode-map (kbd "j") 'next-line)
+    (define-key view-mode-map (kbd "k") 'previous-line)
+    (define-key view-mode-map (kbd "l") 'forward-char)))
+
+(use-package doc-view
+  :config
+  (define-key doc-view-mode-map (kbd "j")
+    #'doc-view-next-line-or-next-page)
+  (define-key doc-view-mode-map (kbd "k")
+    #'doc-view-previous-line-or-previous-page)
+  ;; use 'q' to kill the buffer, not just hide it
+  (define-key doc-view-mode-map (kbd "q")
+    #'kill-this-buffer))
+
+(defun eos/turn-on-viewing-mode ()
+  "Turn on the viewing mode, to make looking through logs easier"
+  (interactive)
+  (view-mode 1)
+  (when (fboundp 'eos/turn-on-hl-line)
+    (eos/turn-on-hl-line)))
+#+END_SRC
+
+I also use the 'pdf-tools' package, which is *really* nice for viewing PDF
+files. The only real caveat for it is that it requires you to do the =M-x
+pdf-tools-install= every time the package is updated, to actually *build* the
+tool that it uses.
+
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :when window-system
+  :init (pdf-tools-install))
+#+END_SRC
+
+Expand region is useful it's insane.
+
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :ensure t
+  :defer t
+  :bind (("C-c e" . er/expand-region)
+         ("C-M-@" . er/contract-region)))
+#+END_SRC
+
+Mulitple cursors is like rectangular selection/insertion but on steroids
+
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)))
+#+END_SRC
+
+VLF lets me handle things like 2gb files gracefully, which is good, because
+sometimes I need to look at someone's 5gb log file.
+
+#+BEGIN_SRC emacs-lisp
+(use-package vlf-setup
+  :ensure vlf)
+#+END_SRC
+
+I use M-x =proced= a lot to get a top-like (or htop-like) display of processes,
+kill them and all that, when I do, I want it to auto-update
+
+#+BEGIN_SRC emacs-lisp
+(setq-default proced-auto-update-flag t)
+(setq-default proced-auto-update-interval 5)
+(add-hook 'proced-mode-hook 'eos/turn-on-hl-line)
+#+END_SRC
+
+I don't really need bi-directional display, so let's speed up long lines
+
+#+BEGIN_SRC emacs-lisp
+(setq-default bidi-display-reordering nil)
+#+END_SRC
+
+Don't bother saving things to the kill-ring twice, remove duplicates
+
+#+BEGIN_SRC emacs-lisp
+(setq kill-do-not-save-duplicates t)
+#+END_SRC
+
+Preserve the window location when opening things
+
+#+BEGIN_SRC emacs-lisp
+(setq switch-to-buffer-preserve-window-point t)
+#+END_SRC
+
+Use a sane re-builder syntax so I don't have to have crazy escapes, see:
+https://masteringemacs.org/article/re-builder-interactive-regexp-builder
+
+#+BEGIN_SRC emacs-lisp
+(setq reb-re-syntax 'string)
+#+END_SRC
+
+Ignore case when performing completion
+
+#+BEGIN_SRC emacs-lisp
+(setq completion-ignore-case t
+      read-file-name-completion-ignore-case t)
+#+END_SRC
+
+I occasionally use =rgrep= to search through code, and it can be pretty handy to
+be able to refactor the name of a method or something by making the ~*grep*~
+buffer writable, that's what wgrep does.
+
+#+BEGIN_SRC emacs-lisp
+(use-package wgrep
+  :ensure t
+  :init (require 'wgrep))
+#+END_SRC
+
+Increase the auto-revert timer from its default of 5 seconds to a more
+reasonable value
+
+#+BEGIN_SRC emacs-lisp
+(setq auto-revert-interval 10)
+#+END_SRC
+
+* GPG and gpg-agent (as well as SSH agent)
+:PROPERTIES:
+:CUSTOM_ID: gpg-agent
+:END:
+
+I use =gpg-agent= [fn:30:
+https://www.debian-administration.org/article/452/Using_gnupg-agent_to_securely_retain_keys]
+as an ssh agent.
+
+#+begin_src emacs-lisp :tangle yes
+(defun tsp/gpg-version ()
+  "Return the version of gpg as a string"
+  (save-window-excursion
+    (with-temp-buffer
+      (shell-command (concat epg-gpg-program " --version") (current-buffer))
+      (goto-char (point-min))
+      (string-match "gpg (GnuPG) \\(.*\\)" (buffer-string))
+      (tsp/str-chomp
+       (match-string 1)))))
+#+end_src
+
+Before we start, let's install a nice little tool for setting up ssh-agent and
+gpg-agent, =keychain=
+
+I use =gpg2= everywhere, including in Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq epg-gpg-program "gpg2")
+#+END_SRC
+
+* OS-specific settings
+:PROPERTIES:
+:CUSTOM_ID: os-specific-settings
+:END:
+
+** Linux
+:PROPERTIES:
+:CUSTOM_ID: linux
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'gnu/linux)
+
+  ;; Whether to use GTK tooltips or emacs ones
+  ;; (setq x-gtk-use-system-tooltips nil)
+  (setq x-gtk-use-system-tooltips t)
+
+  (defun tsp/max-fullscreen ()
+    (interactive)
+    (toggle-frame-maximized))
+
+  ;; fullscreen
+  (add-hook 'after-init-hook #'tsp/max-fullscreen)
+
+  (setq dired-listing-switches "-lFaGh1v --group-directories-first")
+
+  ;; suspend-frame isn't working on Linux?
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
+#+END_SRC
+
+** Mac OSX
+:PROPERTIES:
+:CUSTOM_ID: mac-osx
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'darwin)
+  (setq ns-use-native-fullscreen nil)
+  ;; brew install coreutils
+  (if (executable-find "gls")
+      (progn
+        (setq insert-directory-program "gls")
+        (setq dired-listing-switches "-lFaGh1v --group-directories-first"))
+    (setq dired-listing-switches "-ahlF"))
+  (defun copy-from-osx ()
+    "Handle copy/paste intelligently on osx."
+    (let ((pbpaste (purecopy "/usr/bin/pbpaste")))
+      (if (and (eq system-type 'darwin)
+               (file-exists-p pbpaste))
+          (let ((tramp-mode nil)
+                (default-directory "~"))
+            (shell-command-to-string pbpaste)))))
+
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "/usr/bin/pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'paste-to-osx
+        interprogram-paste-function 'copy-from-osx)
+
+  (defun move-file-to-trash (file)
+    "Use `trash' to move FILE to the system trash.
+When using Homebrew, install it using \"brew install trash\"."
+    (call-process (executable-find "trash")
+                  nil 0 nil
+                  file)))
+#+END_SRC
+
+Sometimes I use the OSX =emacs-mac= port:
+https://github.com/railwaycat/emacs-mac-port , which has a whole other set of
+issues, so this is special handling of it...
+
+#+BEGIN_SRC emacs-lisp
+(when (eq window-system 'mac)
+
+  (defun eos/max-fullscreen ()
+    (interactive)
+    (set-frame-parameter nil 'fullscreen 'fullboth))
+
+  ;; fullscreen
+  (add-hook 'after-init-hook #'eos/max-fullscreen)
+  ;; use alt as hyper
+  (setq mac-option-modifier 'meta)
+  ;; use command as meta
+  (setq mac-command-modifier 'hyper))
+#+END_SRC
+
+* Spell check and flyspell settings
+:PROPERTIES:
+:CUSTOM_ID: spellcheck
+:END:
+I use Hunspell and Aspell checking spelling, ignoring words under 3 characters
+and running very quickly. My personal word dictionary is at =~/.flydict=.
+
+While I used to use Hunspell, I've gone back to aspell because it's a bit easier
+to get up and running with.
+
+#+BEGIN_SRC emacs-lisp
+;; Standard location of personal dictionary
+(setq ispell-personal-dictionary "~/.flydict")
+
+;; Mostly taken from
+;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
+(when (executable-find "aspell")
+  (setq ispell-program-name (executable-find "aspell"))
+  (setq ispell-extra-args
+        (list "--sug-mode=fast" ;; ultra|fast|normal|bad-spellers
+              "--lang=en_US"
+              "--ignore=4")))
+
+;; hunspell
+(when (executable-find "hunspell")
+  (setq ispell-program-name (executable-find "hunspell"))
+  (setq ispell-extra-args '("-d en_US"
+                            "-p ~/.flydict")))
+
+(add-to-list 'ispell-skip-region-alist '("[^\000-\377]+"))
+(add-to-list 'ispell-skip-region-alist '(":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:"))
+(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE"))
+#+END_SRC
+
+In most non-programming modes, =M-.= can be used to spellcheck the word
+(otherwise it would jump to the definition)
+
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell
+  :ensure t
+  :defer t
+  :diminish ""
+  :init
+  ;; So previously, I used to do this:
+  ;;(add-hook 'prog-mode-hook #'flyspell-prog-mode)
+
+  ;; start with it turned off
+  (setq eos/programming-spellcheck nil)
+
+  (use-package shut-up :ensure t)
+  (defun eos/flyspell-buffer-quietly ()
+    (interactive)
+    (when eos/programming-spellcheck
+      (save-excursion (shut-up (flyspell-buffer)))))
+
+  ;; But, the problem then is that you get spell checking as you go, instead,
+  ;; I think I'd rather have the buffer spellchecked when it's saved, and still
+  ;; be able to go through the errors
+  (defun eos/turn-on-programming-spellcheck ()
+    (interactive)
+    (flyspell-mode -1)
+    (when (not (and (boundp 'org-src-mode)
+                    org-src-mode))
+      ;; Tell the local buffer it's safe to flyspell this after save
+      (setq-local eos/programming-spellcheck t)
+      ;; Automatically becomes local
+      (setq flyspell-generic-check-word-predicate
+            #'flyspell-generic-progmode-verify)
+      ;; C-, is normally set in flyspell mode, but since we're not turning it on,
+      ;; we still need to be able to hit it, so bind it locally
+      (local-set-key (kbd "C-,") 'flyspell-goto-next-error)))
+  ;; Turned off right now, as I'm still tweaking this
+  ;;(add-hook 'after-save-hook #'eos/flyspell-buffer-quietly)
+  (add-hook 'prog-mode-hook #'eos/turn-on-programming-spellcheck)
+  :config
+  (define-key flyspell-mode-map (kbd "C-.") 'company-complete))
+#+END_SRC
+
+
+* Binding the EOS mega-map with Hydra
+:PROPERTIES:
+:CUSTOM_ID: eos-hydra-map
+:END:
+
+I'm used to not be a fan of hydra, mostly because I don't need popups for every
+little thing under the sun. However, I lately decided I wanted a unified
+interface to the parts of EOS.
+
+#+BEGIN_SRC emacs-lisp
+(use-package hydra :ensure t)
+
+(defhydra eos/hydra-toggle-map nil
+  "
+^Toggle^
+^^^^^^^^----------------------
+_d_: debug-on-error             _+_: monitor jack in
+_D_: debug-on-quit              _-_: monitor jack out
+_f_: fixed/variable width mode  _0_: monitor reset
+_F_: auto-fill-mode             _R_: code reading mode
+_l_: toggle-truncate-lines
+_h_: hl-line-mode
+_r_: read-only-mode
+_v_: viewing-mode
+_n_: narrow-or-widen-dwim
+_g_: golden-ratio-mode
+_q_: quit
+"
+  ("d" toggle-debug-on-error :exit t)
+  ("D" toggle-debug-on-quit :exit t)
+  ("g" golden-ratio-mode :exit t)
+  ("f" variable-pitch-mode :exit t)
+  ("F" auto-fill-mode :exit t)
+  ("l" toggle-truncate-lines :exit t)
+  ("r" read-only-mode :exit t)
+  ;; This gets turned on/off unconditionally (not the eos/turn-on-hl-line-mode)
+  ("h" hl-line-mode :exit t)
+  ("v" eos/turn-on-viewing-mode :exit t)
+  ("n" eos/narrow-or-widen-dwim :exit t)
+  ("+" eos/monitor-jack-in :exit t)
+  ("-" eos/monitor-jack-out :exit t)
+  ("0" eos/monitor-reset :exit t)
+  ("R" eos/code-reading-mode :exit t)
+  ("q" nil :exit t))
+
+(defhydra eos/hydra-next-error nil
+  "Error Selection"
+  ("`" next-error "next")
+  ("j" next-error "next" :bind nil)
+
+  ("n" next-error "next" :bind nil)
+  ("k" previous-error "previous" :bind nil)
+  ("p" previous-error "previous" :bind nil)
+  ("l" flycheck-list-errors "list-errors" :exit t)
+  ("q" nil "quit" :color red))
+
+(defhydra eos/hydra-macro
+  (:pre
+   (when defining-kbd-macro
+     (kmacro-end-macro 1)))
+  "
+  ^Create-Cycle^   ^Basic^           ^Insert^        ^Save^         ^Edit^
+╭─────────────────────────────────────────────────────────────────────────╯
+     ^_k_^           [_e_] execute    [_n_] insert    [_b_] name      [_'_] previous
+     ^^↑^^           [_d_] delete     [_t_] set       [_K_] key       [_,_] last
+ ( ←   → )       [_o_] edit       [_a_] add       [_x_] register
+     ^^↓^^           [_r_] region     [_f_] format    [_B_] defun
+     ^_j_^           [_m_] step
+    ^^   ^^          [_s_] swap
+"
+  ("(" kmacro-start-macro :color blue)
+  (")" kmacro-end-or-call-macro-repeat)
+  ("k" kmacro-cycle-ring-previous)
+  ("j" kmacro-cycle-ring-next)
+  ("r" apply-macro-to-region-lines)
+  ("d" kmacro-delete-ring-head)
+  ("e" kmacro-end-or-call-macro-repeat)
+  ("o" kmacro-edit-macro-repeat)
+  ("m" kmacro-step-edit-macro)
+  ("s" kmacro-swap-ring)
+  ("n" kmacro-insert-counter)
+  ("t" kmacro-set-counter)
+  ("a" kmacro-add-counter)
+  ("f" kmacro-set-format)
+  ("b" kmacro-name-last-macro)
+  ("K" kmacro-bind-to-key)
+  ("B" insert-kbd-macro)
+  ("x" kmacro-to-register)
+  ("'" kmacro-edit-macro)
+  ("," edit-kbd-macro)
+  ("q" nil :color blue))
+#+END_SRC
+
+Here's a Hydra for information about the system (and emacs) that I stole from a
+different user:
+
+#+BEGIN_SRC emacs-lisp
+(defhydra eos/hydra-about-emacs ()
+  "
+    About Emacs                                                        [_q_] quit
+    ^^--------------------------------------------------------------------------
+    PID:             %s(emacs-pid)
+    Uptime:          %s(emacs-uptime)
+    Init time:       %s(emacs-init-time)
+    Directory:       %s(identity user-emacs-directory)
+    Invoked from:    %s(concat invocation-directory invocation-name)
+    Version:         %s(identity emacs-version)
+
+    User Info
+    ^^--------------------------------------------------------------------------
+    User name:       %s(user-full-name)
+    Login (real):    %s(user-login-name) (%s(user-real-login-name))
+      UID (real):    %s(user-uid) (%s(user-real-uid))
+      GID (real):    %s(group-gid) (%s(group-real-gid))
+    Mail address:    %s(identity user-mail-address)
+
+    System Info
+    ^^--------------------------------------------------------------------------
+    System name:     %s(system-name)
+    System type:     %s(identity system-type)
+    System config:   %s(identity system-configuration)
+    "
+  ("q" nil nil))
+#+END_SRC
+
+And finally, the main EOS Hydra for entry:
+
+#+BEGIN_SRC emacs-lisp
+(defhydra eos/hydra nil
+  "
+╭────────────────────────────────────────────────────────╯
+  [_a_] Org Agenda       [_E_] ERC       [_m_] Mail
+  [_t_] Toggle map       [_T_] Twitter   [_M_] Music
+  [_s_] Skeletons        [_P_] Prodigy   [_g_] Gnus
+  [_p_] Proced           [_W_] Weather   [(] Macros
+  [_c_] Multi-compile    [_R_] RSS       [`] Errors
+  [_d_] Downloads        [_D_] Debbugs   [_C_] ES-CC
+  [_b_] Project's Eshell [_S_] Smerge    [_B_] Bookmarks
+  [_q_] quit
+"
+
+  ("`" eos/hydra-next-error/body :exit t)
+  ("(" eos/hydra-macro/body :exit t)
+  ("a" (org-agenda nil " ") :exit t)
+  ("b" eos/popup-project-eshell :exit t)
+  ("A" eos/hydra-about-emacs/body :exit t)
+  ("t" eos/hydra-toggle-map/body :exit t)
+  ("T" eos/start-or-jump-to-twitter :exit t)
+  ("g" gnus :exit t)
+  ("d" eos/popup-downloads :exit t)
+  ("D" debbugs-gnu :exit t)
+  ("B" helm-bookmarks :exit t)
+  ("C" es-command-center :exit t)
+  ("m" eos/switch-to-mail :exit t)
+  ("M" eos/hydra-mpd/body :exit t)
+  ("c" multi-compile-run :exit t)
+  ("E" (when (y-or-n-p "Really start ERC?") (start-erc)) :exit t)
+  ("R" elfeed :exit t)
+  ("s" eos/hydra-skeleton/body :exit t)
+  ("S" eos/hydra-smerge/body :exit t)
+  ("p" proced :exit t)
+  ("P" prodigy :exit t)
+  ("W" wttrin :exit t)
+  ("q" nil :exit t))
+
+;; Bind the main EOS hydra to M-t
+(global-set-key (kbd "M-t") 'eos/hydra/body)
+#+END_SRC
+
+* Multiple Emacs Perspectives with Eyebrowse
+:PROPERTIES:
+:CUSTOM_ID: eyebrowse
+:END:
+Eyebrowse is a great package for workspaces in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eyebrowse
+  :ensure t
+  :init
+  (progn
+    (defun eos/create-eyebrowse-setup ()
+      (interactive)
+      "Create a default window config, if none is present"
+      (when (not (eyebrowse--window-config-present-p 4))
+        ;; there's probably a better way to do this, creating four workspaces
+        (eyebrowse-switch-to-window-config-2)
+        (eyebrowse-switch-to-window-config-3)
+        (eyebrowse-switch-to-window-config-4)
+        (eyebrowse-switch-to-window-config-1)))
+    (setq eyebrowse-wrap-around t
+          eyebrowse-new-workspace t)
+    (eyebrowse-mode 1)
+    (global-set-key (kbd "C-'") 'eyebrowse-next-window-config)
+    (add-hook 'after-init-hook #'eos/create-eyebrowse-setup)))
+#+END_SRC
+
+* Automatically saving files
+:PROPERTIES:
+:CUSTOM_ID: h:1feb51db-6ea9-49bb-86b3-295f03c0d3fe
+:END:
+
+I've experimented a bit with the different auto-save features that Emacs has,
+=super-save=, =auto-save-mode=, and =auto-save-mode-enhanced=. They can be nice,
+but they also have a bit of downsides...
+
+#+BEGIN_SRC emacs-lisp
+(use-package auto-save-buffers-enhanced
+  :ensure t
+  :disabled t
+  :init (auto-save-buffers-enhanced t)
+  :config
+  (setq auto-save-buffers-enhanced-interval 3.0
+        ;; Don't auto-save org source popups
+        auto-save-buffers-enhanced-exclude-regexps '("Org Src")
+        ;; Save things quietly
+        auto-save-buffers-enhanced-quiet-save-p t))
+#+END_SRC
+
+* Handling excessively long lines
+:PROPERTIES:
+:CUSTOM_ID: h:d610191c-44ba-40b4-9d07-9e26d1c50395
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(when (require 'so-long nil :noerror)
+  ;; 750 columns means it's too long! (default is 250)
+  (setq so-long-threshold 750)
+  (add-to-list 'so-long-minor-modes 'rainbow-delimiters-mode)
+  (add-to-list 'so-long-minor-modes 'paren-face-mode)
+  (add-to-list 'so-long-minor-modes 'electric-indent-mode)
+  (add-to-list 'so-long-minor-modes 'electric-pair-mode)
+  (add-to-list 'so-long-minor-modes 'electric-layout-mode)
+  (add-to-list 'so-long-minor-modes 'idle-highlight-mode)
+  (add-to-list 'so-long-minor-modes 'show-paren-mode)
+  (add-to-list 'so-long-minor-modes 'git-gutter-mode)
+  (so-long-enable)
+
+  (defun eos/so-long-hook () "Used in `so-long-hook'.")
+
+  (add-hook 'so-long-hook #'eos/so-long-hook))
+#+END_SRC

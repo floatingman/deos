@@ -1,0 +1,443 @@
+#+TITLE: EShell Module
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-eshell)
+#+END_SRC
+
+* Setup up Shell and Eshell Environment
+:PROPERTIES:
+:CUSTOM_ID: shell-setup
+:END:
+Things for running shells inside of emacs
+
+This allows a GUI emacs to inherit =$PATH= and other things from the shell when
+run. I use it for the path on OSX and JAVA_HOME everywhere else.
+
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :defer t
+  :init
+  (progn
+    (setq exec-path-from-shell-variables '("JAVA_HOME"
+                                           "PATH"
+                                           "NVM_PATH"
+                                           "WORKON_HOME"
+                                           "RUST_SRC_PATH"
+                                           "GPG_AGENT_INFO"
+                                           "MEGHANADA_GRADLE_VERSION"
+                                           "MANPATH"))
+    (exec-path-from-shell-initialize)))
+#+END_SRC
+
+Sets up the =with-editor= package so things that invoke =$EDITOR= will use the
+current emacs if I'm already inside of emacs
+
+#+BEGIN_SRC emacs-lisp
+(use-package with-editor
+  :ensure t
+  :init
+  (progn
+    (add-hook 'shell-mode-hook  'with-editor-export-editor)
+    (add-hook 'eshell-mode-hook 'with-editor-export-editor)))
+#+END_SRC
+
+Also, let's set up any SSH or GPG keychains that the [[http://www.funtoo.org/Keychain][Keychain]] tool has set up
+for us (which I use at the shell)
+
+#+BEGIN_SRC emacs-lisp
+(use-package keychain-environment
+  :ensure t
+  :init
+  (add-hook 'after-init-hook #'keychain-refresh-environment))
+#+END_SRC
+
+First, Emacs doesn't handle =less= well, so use =cat= instead for the shell
+pager:
+
+#+BEGIN_SRC emacs-lisp
+(setenv "PAGER" "cat")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq comint-scroll-to-bottom-on-input t ;; always insert at the bottom
+      ;; always add output at the bottom
+      comint-scroll-to-bottom-on-output nil
+      ;; scroll to show max possible output
+      comint-scroll-show-maximum-output t
+      ;; no duplicates in command history
+      comint-input-ignoredups t
+      ;; insert space/slash after file completion
+      comint-completion-addsuffix t
+      ;; if this is t, it breaks shell-command
+      comint-prompt-read-only nil)
+
+(defun deos/shell-kill-buffer-sentinel (process event)
+  (when (memq (process-status process) '(exit signal))
+    (kill-buffer)))
+
+(defun deos/kill-process-buffer-on-exit ()
+  (set-process-sentinel (get-buffer-process (current-buffer))
+                        #'deos/shell-kill-buffer-sentinel))
+
+(dolist (hook '(ielm-mode-hook term-exec-hook comint-exec-hook))
+  (add-hook hook 'deos/kill-process-buffer-on-exit))
+
+(defun set-scroll-conservatively ()
+  "Add to shell-mode-hook to prevent jump-scrolling on newlines in shell buffers."
+  (set (make-local-variable 'scroll-conservatively) 10))
+
+(defadvice comint-previous-matching-input
+    (around suppress-history-item-messages activate)
+  "Suppress the annoying 'History item : NNN' messages from shell history isearch.
+If this isn't enough, try the same thing with
+comint-replace-by-expanded-history-before-point."
+  (let ((old-message (symbol-function 'message)))
+    (unwind-protect
+        (progn (fset 'message 'ignore) ad-do-it)
+      (fset 'message old-message))))
+
+(add-hook 'shell-mode-hook #'set-scroll-conservatively)
+;; truncate buffers continuously
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
+;; interpret and use ansi color codes in shell output windows
+(add-hook 'shell-mode-hook #'ansi-color-for-comint-mode-on)
+#+END_SRC
+
+* Eshell
+:PROPERTIES:
+:CUSTOM_ID: eshell
+:END:
+Eshell is great for most shell things. It's a great ZSH replacement. Regardless,
+it needs some tweaks in order to be fully useful.
+
+First, a function to be called when eshell-mode is entered
+
+#+BEGIN_SRC emacs-lisp
+(defun deos/setup-eshell ()
+  (interactive)
+  ;; turn off semantic-mode in eshell buffers
+  (semantic-mode -1)
+  ;; turn off hl-line-mode
+  (when (fboundp 'deos/turn-off-hl-line)
+    (deos/turn-off-hl-line))
+  (local-set-key (kbd "M-P") 'eshell-previous-prompt)
+  (local-set-key (kbd "M-N") 'eshell-next-prompt)
+  (local-set-key (kbd "M-R") 'eshell-previous-matching-input)
+  (local-set-key (kbd "M-r") 'helm-eshell-history))
+#+END_SRC
+
+Add a nice helper to sudo-edit a file
+
+#+BEGIN_SRC emacs-lisp
+(defun sudoec (file)
+  (interactive)
+  (find-file (concat "/sudo::" (expand-file-name file))))
+#+END_SRC
+
+Also, after eshell has loaded its options, let's load some other niceties like
+completion, prompt and term settings:
+
+#+BEGIN_SRC emacs-lisp
+(use-package eshell
+  :commands (eshell eshell-command)
+  :bind ("C-c m" . eshell)
+  :init
+  (require 'em-smart)
+  (setq eshell-glob-case-insensitive nil
+        eshell-error-if-no-glob nil
+        eshell-scroll-to-bottom-on-input nil
+        eshell-where-to-jump 'begin
+        eshell-review-quick-commands nil
+        eshell-smart-space-goes-to-end t)
+  ;; Initialize "smart" mode
+  ;;(add-hook 'eshell-mode-hook #'eshell-smart-initialize)
+  :config
+  (defalias 'emacs 'find-file)
+  (defalias 'hff 'hexl-find-file)
+  (defalias 'sec 'sudoec)
+  (setenv "PAGER" "cat")
+  (use-package esh-opt
+    :config
+    (use-package em-cmpl)
+    (use-package em-prompt)
+    (use-package em-term)
+
+    (setq eshell-cmpl-cycle-completions nil
+          ;; auto truncate after 12k lines
+          eshell-buffer-maximum-lines 12000
+          ;; history size
+          eshell-history-size 500
+          ;; buffer shorthand -> echo foo > #'buffer
+          eshell-buffer-shorthand t
+          ;; my prompt is easy enough to see
+          eshell-highlight-prompt nil
+          ;; treat 'echo' like shell echo
+          eshell-plain-echo-behavior t
+          ;; add -lh to the `ls' flags
+          eshell-ls-initial-args "-lh")
+
+    ;; Visual commands
+    (setq eshell-visual-commands '("vi" "screen" "top" "less" "more" "lynx"
+                                   "ncftp" "pine" "tin" "trn" "elm" "vim"
+                                   "nmtui" "alsamixer" "htop" "el" "elinks"
+                                   "ssh" "nethack" "dtop" "dstat"))
+    (setq eshell-visual-subcommands '(("git" "log" "diff" "show")
+                                      ("vagrant" "ssh")))
+
+    (defun deos/truncate-eshell-buffers ()
+      "Truncates all eshell buffers"
+      (interactive)
+      (save-current-buffer
+        (dolist (buffer (buffer-list t))
+          (set-buffer buffer)
+          (when (eq major-mode 'eshell-mode)
+            (eshell-truncate-buffer)))))
+
+    ;; After being idle for 5 seconds, truncate all the eshell-buffers if
+    ;; needed. If this needs to be canceled, you can run `(cancel-timer
+    ;; deos/eshell-truncate-timer)'
+    (setq deos/eshell-truncate-timer
+          (run-with-idle-timer 5 t #'deos/truncate-eshell-buffers))
+
+    (defun eshell/cds ()
+      "Change directory to the project's root."
+      (eshell/cd (locate-dominating-file default-directory ".git")))
+
+    (defalias 'eshell/l 'eshell/ls)
+    (defalias 'eshell/ll 'eshell/ls)
+
+    (defun eshell/ec (pattern)
+      (if (stringp pattern)
+          (find-file pattern)
+        (mapc #'find-file (mapcar #'expand-file-name pattern))))
+    (defalias 'e 'eshell/ec)
+    (defalias 'ee 'find-file-other-window)
+
+    (defun eshell/d (&rest args)
+      (dired (pop args) "."))
+
+    (defun eshell/clear ()
+      "Clear the eshell buffer"
+      (interactive)
+      (let ((eshell-buffer-maximum-lines 0))
+        (eshell-truncate-buffer)
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (eshell-send-input)))))
+
+  (defun eshell/icat (&rest args)
+    "Display image(s)."
+    (let ((elems (eshell-flatten-list args)))
+      (while elems
+        (eshell-printn
+         (propertize " "
+                     'display (create-image (expand-file-name (car elems)))))
+        (setq elems (cdr elems))))
+    nil)
+
+  (add-hook 'eshell-mode-hook #'deos/setup-eshell)
+
+  ;; See eshell-prompt-function below
+  (setq eshell-prompt-regexp "^[^#$\n]* [#$] ")
+
+  ;; So the history vars are defined
+  (require 'em-hist)
+  (if (boundp 'eshell-save-history-on-exit)
+      ;; Don't ask, just save
+      (setq eshell-save-history-on-exit t))
+
+  ;; See: https://github.com/kaihaosw/eshell-prompt-extras
+  (use-package eshell-prompt-extras
+    :ensure t
+    :init
+    (progn
+      (setq eshell-highlight-prompt nil
+            epe-git-dirty-char " Ϟ"
+            ;; epe-git-dirty-char "*"
+            eshell-prompt-function 'epe-theme-dakrone)))
+
+  (defun eshell/magit ()
+    "Function to open magit-status for the current directory"
+    (interactive)
+    (magit-status default-directory)
+    nil))
+#+END_SRC
+
+I use a dedicated buffer for connection to my desktop, with a binding of =C-x
+d=, if the buffer doesn't exist it is created.
+
+#+BEGIN_SRC emacs-lisp
+(defun deos/create-or-switch-to-delta-buffer ()
+  "Switch to the *eshell delta* buffer, or create it"
+  (interactive)
+  (if (get-buffer "*eshell-delta*")
+      (switch-to-buffer "*eshell-delta*")
+    (let ((eshell-buffer-name "*eshell-delta*"))
+      (eshell))))
+
+(global-set-key (kbd "C-x d") 'deos/create-or-switch-to-delta-buffer)
+
+(defun deos/create-or-switch-to-eshell-1 ()
+  "Switch to the *eshell* buffer, or create it"
+  (interactive)
+  (if (get-buffer "*eshell*")
+      (switch-to-buffer "*eshell*")
+    (let ((eshell-buffer-name "*eshell*"))
+      (eshell))))
+
+(defun deos/create-or-switch-to-eshell-2 ()
+  "Switch to the *eshell*<2> buffer, or create it"
+  (interactive)
+  (if (get-buffer "*eshell*<2>")
+      (switch-to-buffer "*eshell*<2>")
+    (let ((eshell-buffer-name "*eshell*<2>"))
+      (eshell))))
+
+(defun deos/create-or-switch-to-eshell-3 ()
+  "Switch to the *eshell*<3> buffer, or create it"
+  (interactive)
+  (if (get-buffer "*eshell*<3>")
+      (switch-to-buffer "*eshell*<3>")
+    (let ((eshell-buffer-name "*eshell*<3>"))
+      (eshell))))
+
+(defun deos/create-or-switch-to-eshell-4 ()
+  "Switch to the *eshell*<4> buffer, or create it"
+  (interactive)
+  (if (get-buffer "*eshell*<4>")
+      (switch-to-buffer "*eshell*<4>")
+    (let ((eshell-buffer-name "*eshell*<4>"))
+      (eshell))))
+
+(defun deos/create-all-eshell-buffers ()
+  "Create all my normal eshell buffers"
+  (interactive)
+  (let ((eshell-buffer-name "*eshell*")
+        (default-directory "~/"))
+    (eshell))
+  (let ((eshell-buffer-name "*eshell*<2>")
+        (default-directory "~/")) (eshell))
+  (let ((eshell-buffer-name "*eshell-delta*")
+        (default-directory "~/.emacs.d"))
+    (eshell))
+  (let ((eshell-buffer-name "*eshell downloads*")
+        (default-directory "~/Downloads"))
+    (eshell)))
+
+(global-set-key (kbd "M-@") #'deos/create-all-eshell-buffers)
+
+(global-set-key (kbd "H-1") 'deos/create-or-switch-to-eshell-1)
+(global-set-key (kbd "H-2") 'deos/create-or-switch-to-eshell-2)
+(global-set-key (kbd "H-3") 'deos/create-or-switch-to-eshell-3)
+(global-set-key (kbd "H-4") 'deos/create-or-switch-to-eshell-4)
+(global-set-key (kbd "s-1") 'deos/create-or-switch-to-eshell-1)
+(global-set-key (kbd "s-2") 'deos/create-or-switch-to-eshell-2)
+(global-set-key (kbd "s-3") 'deos/create-or-switch-to-eshell-3)
+(global-set-key (kbd "s-4") 'deos/create-or-switch-to-eshell-4)
+(global-set-key (kbd "M-1") 'deos/create-or-switch-to-eshell-1)
+(global-set-key (kbd "M-2") 'deos/create-or-switch-to-eshell-2)
+(global-set-key (kbd "M-3") 'deos/create-or-switch-to-eshell-3)
+(global-set-key (kbd "M-4") 'deos/create-or-switch-to-eshell-4)
+#+END_SRC
+
+Also, add the buffer stack option to eshell
+
+#+BEGIN_SRC emacs-lisp
+(use-package esh-buf-stack
+  :ensure t
+  :commands eshell-push-command
+  :config
+  (setup-eshell-buf-stack)
+  (define-key eshell-mode-map (kbd "M-q") 'eshell-push-command))
+#+END_SRC
+
+Indicate the exit status of the previous command using the eshell-fringe-status
+package. Eh, disabled this for now, not sure I actually like it.
+
+#+BEGIN_SRC emacs-lisp
+(use-package eshell-fringe-status
+  :disabled t
+  :ensure t
+  :init
+  (add-hook 'eshell-mode-hook 'eshell-fringe-status-mode))
+#+END_SRC
+
+** Eshell aliases
+:PROPERTIES:
+:CUSTOM_ID: eshell-aliases
+:END:
+Like zsh, I use a lot of aliases in eshell, so I need to set those up here:
+
+#+BEGIN_SRC emacs-lisp :tangle out/eshell-alias
+alias aria2c aria2c -c -x5 -s10 -m0 $*
+alias bdt gdate "+%Y%m%dT%H%M%S.%3N%z"
+alias delete curl -s -XDELETE $*
+alias dt gdate "+%Y-%m-%dT%H:%M:%S.%3N%zZ"
+alias epoch gdate +%s
+alias get curl -s -XGET $*
+alias post curl -s -XPOST $*
+alias put curl -s -XPUT $*
+alias se tar zxvf $*
+alias dtop dstat -cdnpmgs --top-bio --top-cpu --top-mem
+#+END_SRC
+
+And we need something to install them
+
+#+BEGIN_SRC sh :tangle sh/deos-shell.sh
+mkdir -p ~/.emacs.d/eshell
+ln -sfv $PWD/out/eshell-alias ~/.emacs.d/eshell/alias
+#+END_SRC
+
+** Open an eshell window here
+:PROPERTIES:
+:CUSTOM_ID: h:27886c4c-b283-496d-ac41-1fe2bdcaf977
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(defun eshell-here ()
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+                     (file-name-directory (buffer-file-name))
+                   default-directory))
+         (height (/ (window-total-height) 3))
+         (name   (car (last (split-string parent "/" t)))))
+    (split-window-vertically (- height))
+    (other-window 1)
+    (eshell "new")
+    (rename-buffer (concat "*eshell: " name "*"))
+
+    (insert (concat "ls"))
+    (eshell-send-input)))
+
+(global-set-key (kbd "C-!") #'eshell-here)
+#+END_SRC
+
+And some nice glue for quickly closing eshell windows
+
+#+BEGIN_SRC emacs-lisp
+(defun eshell/x ()
+  "Closes the EShell session and gets rid of the EShell window."
+  (kill-buffer)
+  (delete-window))
+#+END_SRC
+
+** Open an eshell window there
+:PROPERTIES:
+:CUSTOM_ID: h:321c7f37-a36f-4482-9727-88b651a452d1
+:END:
+
+Like opening one here, but for remote hosts
+
+#+BEGIN_SRC emacs-lisp
+(defun eshell-there (host)
+  (interactive "sHost: ")
+  (let ((default-directory (format "/%s:" host)))
+    (eshell host)))
+#+END_SRC

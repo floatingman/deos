@@ -1,0 +1,35 @@
+#+TITLE:   IDO Module
+#+AUTHOR:  Daniel Newman
+#+EMAIL:   dwnewman78@gmail.com
+#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-ido-mode)
+#+END_SRC
+
+* IDO-mode configuration
+:PROPERTIES:
+:CUSTOM_ID: h:a6e9ee11-5915-4a6b-b89f-a8ebcfe16040
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package ido
+  :init
+  (ido-mode 1)
+  (use-package ido-ubiquitous
+    :ensure t
+    :init (ido-ubiquitous 1))
+  (use-package ido-vertical-mode
+    :ensure t
+    :init (ido-vertical-mode 1))
+  (use-package flx-ido
+    :ensure t
+    :init (flx-ido-mode 1))
+  (use-package smex
+    :ensure t
+    :init
+    (smex-initialize)
+    (global-set-key (kbd "M-x") 'smex)
+    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+    (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)))
+#+END_SRC

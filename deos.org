@@ -1,0 +1,181 @@
+#+TITLE: Daniel Newman's Literate Emacs Configuration
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/.emacs.d/setupfiles/emacs.setup
+
+* The Beginning
+:PROPERTIES:
+:CUSTOM_ID: init
+:END:
+I've seen some cool Emacs configs written out using [[http://orgmode.org/worg/org-contrib/babel/][Org-mode Babel]] to
+enclose code within paragraphs of text. I think this will be a cool
+way to organize my config and also provide some context around why I
+did things the way I did
+
+I am going to attempt to arrange my code in modules and provide a
+makefile to make installing convienent
+
+** Intialization and Installation
+:PROPERTIES:
+:CUSTOM_ID: Initial-prep
+:END:
+
+This creates two files which are ran by the ==Makefile== which
+basically creates default directories and copies some useful utilities
+to the bin folder
+
+#+BEGIN_SRC sh :tangle initialize.sh
+  # Directory for user-installed scripts
+  mkdir -p ~/bin
+
+  # GnuPG
+  mkdir -p ~/.gnupg
+  chmod 700 ~/.gnupg
+
+  # SSH
+  mkdir -p ~/.ssh
+  chmod 700 ~/.ssh
+
+  # Emacs configuration folders
+  mkdir -p ~/.emacs.d
+  mkdir -p ~/.emacs.d/eshell
+#+END_SRC
+
+#+BEGIN_SRC sh :tangle install.sh :eval no
+  ln -sfv $PWD/deos.el ~/.emacs.d/init.el
+  ln -sfv $PWD/init-*.el ~/.emacs.d/lisp
+  ln -sfv $PWD/site-lisp ~/.emacs.d/site-lisp
+  cp -vf bin/* ~/bin
+#+END_SRC
+
+** Emacs Initialization
+:PROPERTIES:
+:CUSTOM_ID: emacs-initialization
+:END:
+
+This is where the magic starts
+
+#+BEGIN_SRC emacs-lisp
+  ;; turn on emacs debugging when starting, turn it off later
+  (setq debug-on-error t)
+  (setq debug-on-quit t)
+
+  (require 'cl)
+
+  (require 'package)
+  (package-initialize)
+
+  ;; orgmode.org unfortunately does not support https
+  (add-to-list 'package-archives
+               '("org" . "http://orgmode.org/elpa/") t)
+  (add-to-list 'package-archives
+               '("gnu" . "https://elpa.gnu.org/packages/") t)
+  (add-to-list 'package-archives
+               '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/") t)
+
+  (setq custom-file "~/.emacs.d/custom.el")
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
+  (defvar deos/did-refresh-packages nil
+    "Flag for whether packages have been refreshed yet")
+
+  (defun install-pkgs (list)
+    (dolist (pkg list)
+      (progn
+        (if (not (package-installed-p pkg))
+            (progn
+              (if (not deos/did-refresh-packages)
+                  (progn (package-refresh-contents)
+                         (setq deos/did-refresh-packages t)))
+              (package-install pkg))))))
+
+  (install-pkgs '(use-package))
+  ;; Load use-package, used for loading packages everywhere else
+  (require 'use-package nil t)
+  ;; Set to t to debug package loading or nil to disable
+  (setq use-package-verbose nil)
+
+  (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+
+  (unless (require 'el-get nil 'noerror)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+
+  (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+  ;;(el-get 'sync)
+
+  (defvar after-deos-hook nil
+    "Hooks to run after all of the DEOS has been loaded")
+
+  (defvar emacs-start-time (current-time)
+    "Time Emacs was started.")
+
+  ;; Installed by `make install`
+  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+  (defmacro try-load (module)
+    "Try to load the given module, logging an error if unable to load"
+    `(condition-case ex
+         (require ,module)
+       ('error
+        (message "DEOS: Unable to load [%s] module: %s" ,module ex))))
+
+
+
+
+  ;; Setup load path
+  (try-load 'init-core)
+  (try-load 'init-utils)
+  (try-load 'init-theme)
+  (try-load 'init-ibuffer)
+  (try-load 'init-completion)
+  (try-load 'init-flycheck)
+  (try-load 'init-paredit)
+  (try-load 'init-editing)
+  (try-load 'init-elm)
+  (try-load 'init-ido-mode)
+  ;;(try-load 'init-snippets)
+  (try-load 'init-misc)
+  (try-load 'init-lisp)
+  (try-load 'init-vc)
+  (try-load 'init-git)
+  (try-load 'init-dired)
+  (try-load 'init-python)
+  (try-load 'init-grep)
+(try-load 'init-helm)
+  ;;(try-load 'init-ivy)
+  (try-load 'init-eshell)
+
+  ;; Hooks
+  (add-hook 'after-deos-hook
+            (lambda ()
+              (message "The Daniel Newman Emacs System has been loaded")))
+
+  (defun deos/time-since-start ()
+    (float-time (time-subtract (current-time)
+                               emacs-start-time)))
+
+  (add-hook 'after-deos-hook
+            `(lambda ()
+               (let ((elapsed (deos/time-since-start)))
+                 (message "Loading %s...done (%.3fs)"
+                          ,load-file-name elapsed))) t)
+  (add-hook 'after-init-hook
+            `(lambda ()
+               (let ((elapsed (deos/time-since-start)))
+                 (message "Loading %s...done (%.3fs) [after-init]"
+                          ,load-file-name elapsed))) t)
+  (run-hooks 'after-deos-hook)
+
+  (setq initial-scratch-message ";; ╔═╗┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬\n;; ╚═╗│  ├┬┘├─┤ │ │  ├─┤\n;; ╚═╝└─┘┴└─┴ ┴ ┴ └─┘┴ ┴\n")
+
+  ;; turn off debugging after emacs starts
+  (setq debug-on-error nil)
+  (setq debug-on-quit nil)
+#+END_SRC
