@@ -42,12 +42,16 @@ to the bin folder
 #+END_SRC
 
 #+BEGIN_SRC sh :tangle install.sh :eval no
+    git submodule init && git submodule update
     ln -sfv $PWD/deos.el ~/.emacs.d/init.el
     ln -sfv $PWD ~/.emacs.d/deos
     ln -sfv $PWD/site-lisp ~/.emacs.d/site-lisp
     ln -sfv $PWD/override ~/.emacs.d/override
     ln -sfv $PWD/snippets ~/.emacs.d/snippets
     cp -vf bin/* ~/bin
+    cd $PWD/override/cedet && make
+    cd ../org-mode && make
+    cd ~/deos
 #+END_SRC
 
 ** Emacs Initialization
