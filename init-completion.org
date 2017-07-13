@@ -3,7 +3,7 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initals t)
 (setq completion-cycle-threshold 5)

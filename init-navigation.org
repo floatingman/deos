@@ -1,0 +1,157 @@
+#+TITLE:   Navigation Module
+#+AUTHOR:  Daniel Newman
+#+EMAIL:   dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-navigation)
+#+END_SRC
+
+
+* General Emacs Navigation
+
+Window Management
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x +") 'balance-windows-area)
+
+(global-set-key (kbd "C-c y") #'bury-buffer)
+(global-set-key (kbd "C-c C-y") #'bury-buffer)
+(global-set-key (kbd "C-c r") #'revert-buffer)
+
+;; ==== Window switching ====
+(defun deos/other-window-backwards ()
+  (interactive)
+  (other-window -1))
+
+(global-set-key (kbd "M-'") #'other-window)
+(global-set-key (kbd "M-\"") #'deos/other-window-backwards)
+(global-set-key (kbd "H-'") #'other-window)
+(global-set-key (kbd "H-\"") #'deos/other-window-backwards)
+(global-set-key (kbd "<C-tab>") #'other-window)
+(global-set-key (kbd "C-x C-o") #'other-window)
+#+END_SRC
+
+Transpose buffers between windows
+#+BEGIN_SRC emacs-lisp
+(defun transpose-buffers (arg)
+  "Transpose the buffers shown in two windows."
+  (interactive "p")
+  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
+    (while (/= arg 0)
+      (let ((this-win (window-buffer))
+            (next-win (window-buffer (funcall selector))))
+        (set-window-buffer (selected-window) next-win)
+        (set-window-buffer (funcall selector) this-win)
+        (select-window (funcall selector)))
+      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
+
+(global-set-key (kbd "C-x 4 t") 'transpose-buffers)
+#+END_SRC
+
+Random keybindings
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-l") 'toggle-truncate-lines)
+
+;; join line to next line
+(global-set-key (kbd "M-j")
+                (lambda ()
+                  (interactive)
+                  (join-line -1)))
+
+;; Completion that uses many different methods to find options.
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+;; Font size
+(define-key global-map (kbd "C-+") 'text-scale-increase)
+(define-key global-map (kbd "C--") 'text-scale-decrease)
+
+;; Start or switch to eshell
+(global-set-key (kbd "C-x C-m") 'eshell)
+
+;; If you want to be able to M-x without meta (phones, etc)
+(global-set-key (kbd "C-c C-x") 'execute-extended-command)
+#+END_SRC
+
+* Isearch
+#+BEGIN_SRC emacs-lisp
+;; Use regex searches by default.
+;;(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+;;(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+;; Case-fold regex by default
+(setq search-default-mode 'character-fold-to-regexp)
+;; Non regex search gets the meta also
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+
+;; Activate occur easily inside isearch
+(define-key isearch-mode-map (kbd "C-o")
+  (lambda () (interactive)
+    (let ((case-fold-search isearch-case-fold-search))
+      (occur (if isearch-regexp isearch-string (regexp-quote isearch-string))))))
+
+(defun deos/add-watchword (string)
+  "Highlight whatever `string' is in the current buffer
+permanently."
+  (font-lock-add-keywords
+   nil `((,(if isearch-regexp isearch-string (regexp-quote isearch-string))
+          1 '((:background "yellow") (:weight bold)) t))))
+
+(define-key isearch-mode-map (kbd "M-h")
+  (lambda () (interactive)
+    (deos/add-watchword
+     (if isearch-regexp isearch-string (regexp-quote isearch-string)))))
+#+END_SRC
+
+* Mices
+
+This helps get trackpads back in the game
+#+BEGIN_SRC emacs-lisp
+;; mouse integration
+(require 'mouse)
+(xterm-mouse-mode t)
+(global-set-key [mouse-4] '(lambda ()
+                           (interactive)
+                           (scroll-down 1)))
+(global-set-key [mouse-5] '(lambda ()
+                           (interactive)
+                           (scroll-up 1)))
+(setq mouse-sel-mode t)
+(defun track-mouse (e))
+#+END_SRC
+
+* Navigating without control
+#+BEGIN_SRC emacs-lisp
+(use-package hydra :ensure t)
+(require 'view)
+
+(defhydra deos/nav-mode (:foreign-keys run)
+  "[NAV-MODE] q or i to exit"
+  ("C-h" hl-line-mode)
+  ("t" toggle-truncate-lines)
+  ("a" beginning-of-line)
+  ("l" forward-char)
+  ("h" backward-char)
+  ("n" next-line)
+  ("j" next-line)
+  ("p" previous-line)
+  ("k" previous-line)
+  ("e" View-scroll-half-page-forward)
+  ("u" View-scroll-half-page-backward)
+  ("SPC" scroll-up-command)
+  ("S-SPC" scroll-down-command)
+  ("<" beginning-of-buffer)
+  (">" end-of-buffer)
+  ("." end-of-buffer)
+  ("C-'" nil)
+  ("d" (when (y-or-n-p "Kill buffer?")
+         (kill-this-buffer))
+   :exit t)
+  ("/" isearch-forward-regexp :exit t)
+  ("?" isearch-backward-regexp :exit t)
+  ("i" nil :exit t)
+  ("q" nil :exit t))
+
+(global-set-key (kbd "M-V") 'deos/nav-mode/body)
+#+END_SRC

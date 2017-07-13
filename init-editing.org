@@ -3,27 +3,12 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package unfill
-  :ensure t)
-
-(when (fboundp 'electric-pair-mode)
-  (electric-pair-mode))
-
-(when (eval-when-compile (version< "24.4" emacs-version))
-  (electric-indent-mode 1))
-
-;; Highlights matching parenthesis
-(show-paren-mode 1)
-
+#+BEGIN_SRC emacs-lisp
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
   (interactive)
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 (global-set-key (kbd "C-;") 'toggle-comment-on-line)
-
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
 
 (use-package indent-guide
   :ensure t

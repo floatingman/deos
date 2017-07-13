@@ -3,7 +3,7 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (if (fboundp 'with-eval-after-load)
     (defalias 'after-load 'with-eval-after-load)
   (defmacro after-load (feature &rest body)

@@ -7,8 +7,10 @@ init-helm.el \
 init-theme.el \
 init-editing.el \
 init-writing.el \
+init-org.el \
 init-dired.el \
 init-ivy.el \
+init-navigation.el \
 init-ido.el \
 init-lisp.el \
 init-develop.el \

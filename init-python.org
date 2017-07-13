@@ -3,7 +3,7 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq auto-mode-alist
       (append '(("SConstruct\\'" . python-mode)
                 ("SConscript\\'" . python-mode))

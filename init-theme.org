@@ -1,4 +1,4 @@
-adw#+TITLE:   Emacs Theme
+#+TITLE:   Emacs Theme
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
@@ -727,7 +727,7 @@ I'm going to start disabling =transient-mark-mode= and only relying on
 =visible-mark-mode= for showing the mark, which alleviates most of the issues
 you see with disabling =transient-mark-mode=
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package visible-mark
   :ensure t
   :init
@@ -757,7 +757,7 @@ Adds asynchronous line numbers to programming-mode files
 #+END_SRC
 
 
-#+BEGIN_SRC emacs-lisp tangle:no
+#+BEGIN_SRC emacs-lisp
 (use-package nlinum
   :ensure t
   :preface

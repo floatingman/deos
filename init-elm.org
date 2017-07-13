@@ -3,7 +3,7 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package elm-mode
   :ensure t
   :diminish elm-indent-mode

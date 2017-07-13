@@ -3,17 +3,17 @@
 #+EMAIL:   dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (provide 'init-develop)
 #+end_src
 
 * Some handy config from [[https://github.com/dakrone/eos][Dakrone]]
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq vc-handled-backends '(git svn))
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (use-package subword
     :diminish subword-mode)
 
@@ -26,7 +26,7 @@
 #+end_src
 
 Highlights for the idle
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package idle-highlight-mode
   :ensure t
   :init
@@ -39,7 +39,7 @@ Highlights for the idle
 
 Bring up the compilation buffer with =C-x c=
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun deos/last-compilation-buffer ()
   "Display last compilation buffer in current window."
   (interactive)
@@ -51,13 +51,13 @@ Bring up the compilation buffer with =C-x c=
 #+end_src
 
 Don't prompt for saving files before compilation
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq compilation-ask-about-save nil)
 #+end_src
 
 Hideshow for folding
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package hideshow
   :bind (("C-c TAB" . hs-toggle-hiding)
          ("C-\\" . hs-toggle-hiding)
@@ -121,13 +121,13 @@ showing them."
 
 Auto revert the buffer if the file is changed on disk
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (global-auto-revert-mode t)
 #+end_src
 
 Uses =M-n= and =M-p= to jump between the same variables in multiple places
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package smartscan
   :ensure t
   :init (add-hook #'prog-mode-hook #'smartscan-mode)
@@ -138,7 +138,7 @@ Uses =M-n= and =M-p= to jump between the same variables in multiple places
 
 Flip them bools
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
     (use-package bool-flip
       :ensure t
       :bind ("C-c C-b" . bool-flip-do-flip))
@@ -146,7 +146,7 @@ Flip them bools
 
 Navigate between functions declarations with =C-c C-p= and =C-c C-n=
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun deos/previous-function ()
   (interactive)
   (beginning-of-defun))
@@ -164,7 +164,7 @@ Navigate between functions declarations with =C-c C-p= and =C-c C-n=
 #+end_src
 
 Navi mode does something similar
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defvar outline-minor-mode-prefix "\M-#")
 
 (use-package navi-mode
@@ -178,7 +178,7 @@ Navi mode does something similar
 
 Indention (just do it right)
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package dtrt-indent
   :ensure t
   :diminish t
@@ -188,7 +188,7 @@ Indention (just do it right)
 
 Highlight a bunch of stuff
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
         (use-package highlight-numbers
           :ensure t
           :init
@@ -216,7 +216,7 @@ Highlight a bunch of stuff
 #+end_src
 
 Trying out cedet again. Be sure to run make in the override/cedet directory
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 ;; Use the full Java 1.5 grammar to parse Java files
 (autoload 'wisent-java-default-setup "semantic/wisent/java"
   "Hook run to setup Semantic in `java-mode'." nil nil)
@@ -264,7 +264,7 @@ Exit the save between databases if there is user input."
 
 Indenting
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (electric-indent-mode 1)
 
   ;; Ignore electric indentation for python and yaml
@@ -280,7 +280,7 @@ Indenting
 #+end_src
 
 Hightlight some keywords
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun deos/add-watchwords ()
   "Highlight FIXME, TODO, and NOCOMMIT in code TODO"
   (font-lock-add-keywords
@@ -298,7 +298,7 @@ Make sure that you do M-x helm-dash-install-docset to install the correct docset
 I usually install Java_SE8, Emacs Lisp, and ElasticSearch. Then I use C-c D (‘D’
 for Documentation) to activate it.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package helm-dash
   :ensure t
   :bind (("C-c D" . helm-dash))
@@ -316,7 +316,7 @@ for Documentation) to activate it.
 
 * Flycheck
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (when (fboundp 'define-fringe-bitmap)
   (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
     [0 0 0 0 0 4 12 28 60 124 252 124 60 28 12 4 0 0 0 0]))
@@ -354,7 +354,7 @@ for Documentation) to activate it.
 
 * Compiling
 This is interesting but I need to customize it for my environment
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (use-package multi-compile
     :ensure t
     :commands multi-compile-run
@@ -423,7 +423,7 @@ This is interesting but I need to customize it for my environment
 #+end_src
 
 Determine the test at point and copy the syntax for it
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun deos/test-at-point ()
   (interactive)
   (if (not (eq major-mode 'java-mode))
@@ -435,7 +435,7 @@ Determine the test at point and copy the syntax for it
 
 Paredit is great for editing anything requiring closures
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
     (use-package paredit
       :ensure t
       :commands paredit-mode
@@ -455,7 +455,7 @@ Paredit is great for editing anything requiring closures
 
 Also turn it on everywhere
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
   (eval-after-load 'paredit-everywhere
     '(define-key paredit-everywhere-mode-map (kbd "M-s") nil))
 
@@ -468,7 +468,7 @@ Also turn it on everywhere
 * Parentheses matching for fun and profit
 
 Insert pairs of characters
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (electric-pair-mode -1)
 (setq electric-pair-preserve-balance t
       electric-pair-delete-adjacent-pairs t
@@ -477,7 +477,7 @@ Insert pairs of characters
 #+end_src
 
 And now for smart parentheses handling
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package smartparens
   :ensure t
   :diminish smartparens-mode

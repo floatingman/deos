@@ -1,0 +1,142 @@
+#+TITLE:   Org Module
+#+AUTHOR:  Daniel Newman
+#+EMAIL:   dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+#+BEGIN_SRC emacs-lisp
+  (provide 'init-org)
+#+END_SRC
+
+* Initial configuration
+#+BEGIN_SRC emacs-lisp
+(install-pkgs '(org-plus-contrib htmlize plantuml-mode gnuplot gnuplot-mode))
+(require 'org)
+(require 'org-habit)
+#+END_SRC
+
+Some things org-mode overwrites, I change them back
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "C-'") #'eyebrowse-next-window-config)
+(define-key org-mode-map (kbd "C-c C-x C-f") #'org-refile)
+(define-key org-mode-map (kbd "<C-tab>") #'other-window)
+(define-key org-mode-map (kbd "C-c M-p") 'org-babel-previous-src-block)
+(define-key org-mode-map (kbd "C-c M-n") 'org-babel-next-src-block)
+#+END_SRC
+
+Turn on some defaults
+#+BEGIN_SRC emacs-lisp
+(defun deos/org-mode-hook ()
+  (interactive)
+  (setq-local fill-column 100)
+  (when (fboundp 'turn-on-auto-fill)
+    (turn-on-auto-fill))
+  (when (fboundp 'turn-on-flyspell)
+    (turn-on-flyspell))
+  (when (fboundp 'yas-minor-mode)
+    (yas-minor-mode 1))
+  (when (fboundp 'my/enable-abbrev-mode)
+    (my/enable-abbrev-mode))
+
+  (diminish 'org-indent-mode)
+  (when (boundp 'org-agenda-mode-map)
+    (define-key org-agenda-mode-map (kbd "C-c C-x C-f") #'org-agenda-refile)))
+#+END_SRC
+
+Global bindings
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c b") 'org-iswitchb)
+(global-set-key (kbd "C-c c") 'org-capture)
+(add-hook 'org-mode-hook #'hl-line-mode)
+(add-hook 'org-agenda-mode-hook #'hl-line-mode)
+(add-hook 'org-mode-hook #'deos/org-mode-hook)
+(when (boundp 'org-export-backends)
+  (custom-set-variables '(org-export-backends '(ascii beamer html latex md))))
+;; Allow's electric-pair-mode to surround things with = and ~ in org-mode
+(modify-syntax-entry ?~ "(~" org-mode-syntax-table)
+(modify-syntax-entry ?= "(=" org-mode-syntax-table)
+#+END_SRC
+
+
+* Org Babel
+#+BEGIN_SRC emacs-lisp
+;; org-babel stuff
+(use-package ob-clojure :ensure clojure-mode)
+(use-package ob-elasticsearch :ensure es-mode)
+
+;; don't run stuff automatically on export
+(setq org-export-babel-evaluate nil
+      ;; always enable noweb, results as code and exporting both
+      org-babel-default-header-args
+      (cons '(:noweb . "yes")
+            (assq-delete-all :noweb org-babel-default-header-args))
+      org-babel-default-header-args
+      (cons '(:exports . "both")
+            (assq-delete-all :exports org-babel-default-header-args))
+      ;; I don't want to be prompted on every code block evaluation
+      org-confirm-babel-evaluate nil)
+
+;; Load the languages we want to allow execution of
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (elasticsearch . t)
+   (clojure . t)
+   (dot . t)
+   (sh . t)
+   (js . t)
+   (haskell . t)
+   (ruby . t)
+   (python . t)
+   (gnuplot . t)
+   (plantuml . t)
+   (ditaa . t)
+   (latex . t)))
+
+;; this is where Fedora installs it, YMMV
+(setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
+
+;; Use org.css from the :wq website for export document stylesheets
+(setq org-html-head-include-default-style nil)
+
+;; ensure this variable is defined
+(unless (boundp 'org-babel-default-header-args:sh)
+  (setq org-babel-default-header-args:sh '()))
+
+;; add a default shebang header argument shell scripts
+(add-to-list 'org-babel-default-header-args:sh
+             '(:shebang . "#!/usr/bin/env bash"))
+
+;; add a default shebang header argument for python
+(add-to-list 'org-babel-default-header-args:python
+             '(:shebang . "#!/usr/bin/env python"))
+
+;; Make babel results blocks lowercase
+(setq org-babel-results-keyword "results")
+
+;; Automatically show images after execution
+(defun bh/display-inline-images ()
+  (condition-case nil
+      (org-display-inline-images)
+    (error nil)))
+(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; Don't enable this because it breaks access to emacs from my Android phone
+(setq org-startup-with-inline-images nil)
+#+END_SRC
+
+Allow asynchronously executing org-babel blocks. Sometimes I run long-running
+babel executions, and this allows Emacs not to hang while executing them
+#+BEGIN_SRC emacs-lisp
+(use-package ob-async
+  :init
+  (use-package org
+    :config
+    (add-to-list 'org-ctrl-c-ctrl-c-hook
+                 'ob-async-org-babel-execute-src-block)))
+#+END_SRC

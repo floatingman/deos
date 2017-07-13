@@ -3,12 +3,12 @@
 #+EMAIL:   dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (provide 'init-java)
 #+end_src
 
 * Groovy
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package groovy-mode
   :ensure t)
 #+end_src
@@ -16,12 +16,12 @@
 * Java development config copied from [[https://github.com/dakrone/eos][Dakrone]]
 
 First decide on which ide to use meghanada or eclim
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (setq deos/use-meghanada t)
 (setq deos/use-eclim nil)
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 ;; via http://emacs.stackexchange.com/questions/17327/how-to-have-c-offset-style-correctly-detect-a-java-constructor-and-change-indent
 (defun my/point-in-defun-declaration-p ()
   (let ((bod (save-excursion (c-beginning-of-defun)
@@ -145,7 +145,7 @@ First decide on which ide to use meghanada or eclim
 
 Managing imports
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package java-imports
   :ensure t
   :config
@@ -155,7 +155,7 @@ Managing imports
 #+end_src
 
 * Eclim
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package eclim
   :ensure t
   :disabled t
@@ -174,7 +174,7 @@ This will have to be downloaded from http://sdkman.io, there is no package for i
 
 Let's also add it to the tramp remote path
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (add-to-list 'tramp-remote-path "~/.sdkman/candidates/gradle/current/bin")
 (add-to-list 'tramp-remote-path "~/.sdkman/candidates/groovy/current/bin")
 #+end_src
@@ -200,7 +200,7 @@ I also add this to my shell configuration:
 I actually choose to do this because the fedora/debian/ubuntu version of
 =global= is so old it doesn't work well.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (defun deos/setup-helm-gtags ()
   (interactive)
   ;; this variables must be set before load helm-gtags
@@ -264,7 +264,7 @@ For [[https://github.com/elastic/elasticsearch][Elasticsearch]] in particular, t
 which starts up ES listening for events, and then =M-x realgud:jdb= and using
 =jdb -attach 8000= to attach to the JVM.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package realgud
   :ensure t)
 #+END_SRC
@@ -277,7 +277,7 @@ which starts up ES listening for events, and then =M-x realgud:jdb= and using
 [[https://github.com/mopemope/meghanada-emacs][Meghanada-mode]] is a new Java development mode that is supposed to be under
 active development, so I'm trying it out.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package meghanada
   :ensure t
   :init

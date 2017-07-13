@@ -3,7 +3,7 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package git-blamed
   :ensure t)
 (use-package gitignore-mode
@@ -86,7 +86,7 @@
 
 Adding this here instead of keeping a seperate
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp
 (use-package diff-hl
   :ensure t
   :config

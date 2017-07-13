@@ -4,13 +4,13 @@
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 * Ivy Module
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (provide 'init-ivy)
 #+END_SRC
 
 Let's start off with some default ivy config
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
         (use-package ivy
           :ensure t
           :demand t
@@ -40,7 +40,7 @@ Let's start off with some default ivy config
 Now let's add some custom configuration
 
 Ivy Historian for those who are nostalgic
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
   (use-package ivy-historian
     :ensure t
     :config
@@ -50,7 +50,7 @@ Ivy Historian for those who are nostalgic
 
 Use ag for greping and swiper for swiping things the cursor is on
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package counsel
   :ensure t
   :diminish counsel-mode
