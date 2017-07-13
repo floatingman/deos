@@ -13,25 +13,7 @@
 :END:
 Things for running shells inside of emacs
 
-This allows a GUI emacs to inherit =$PATH= and other things from the shell when
-run. I use it for the path on OSX and JAVA_HOME everywhere else.
 
-#+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :ensure t
-  :defer t
-  :init
-  (progn
-    (setq exec-path-from-shell-variables '("JAVA_HOME"
-                                           "PATH"
-                                           "NVM_PATH"
-                                           "WORKON_HOME"
-                                           "RUST_SRC_PATH"
-                                           "GPG_AGENT_INFO"
-                                           "MEGHANADA_GRADLE_VERSION"
-                                           "MANPATH"))
-    (exec-path-from-shell-initialize)))
-#+END_SRC
 
 Sets up the =with-editor= package so things that invoke =$EDITOR= will use the
 current emacs if I'm already inside of emacs

@@ -3,7 +3,7 @@
 #+EMAIL:   dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (provide 'init-ido)
 #+END_SRC
 
@@ -12,11 +12,11 @@
 :CUSTOM_ID: h:a6e9ee11-5915-4a6b-b89f-a8ebcfe16040
 :END:
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
 (use-package ido
   :init
   (ido-mode 1)
-  (use-package ido-ubiquitous
+  (use-package ido-completing-read+
     :ensure t
     :init (ido-ubiquitous-mode 1))
   (use-package ido-vertical-mode

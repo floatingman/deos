@@ -148,7 +148,7 @@ This is where the magic starts
         (try-load 'init-java)
         (try-load 'init-editing)
         (try-load 'init-elm)
-        (try-load 'init-ido)
+        ;;(try-load 'init-ido)
         (try-load 'init-misc)
         (try-load 'init-lisp)
         (try-load 'init-git)
