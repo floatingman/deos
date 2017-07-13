@@ -52,6 +52,7 @@ run: all
 		echo "Running: $$f"; \
 		bash -l $$f; \
 	done
+	git submodule init && git submodule update
 
 install: run-init run install.sh
 	bash -l install.sh
