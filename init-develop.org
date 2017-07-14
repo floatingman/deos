@@ -351,6 +351,19 @@ for Documentation) to activate it.
       :init (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))))
 #+end_src
 
+* Yasnippets
+
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :bind (("M-=" . yas-insert-snippet))
+  :diminish yas-minor-mode
+  :init
+  (yas-global-mode 1)
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+  (yas-reload-all))
+#+end_src
 
 * Compiling
 This is interesting but I need to customize it for my environment
