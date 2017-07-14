@@ -62,145 +62,146 @@ to the bin folder
 This is where the magic starts
 
 #+BEGIN_SRC emacs-lisp
-    ;; turn on emacs debugging when starting, turn it off later
-    (setq debug-on-error t)
-    (setq debug-on-quit t)
+      ;; turn on emacs debugging when starting, turn it off later
+      (setq debug-on-error t)
+      (setq debug-on-quit t)
 
-    ;; Load development version of cedet
-    (when (file-exists-p "~/.emacs.d/override/cedet/cedet-devel-load.el")
-      (load "~/.emacs.d/override/cedet/cedet-devel-load.el"))
+      ;; Load development version of cedet
+      (when (file-exists-p "~/.emacs.d/override/cedet/cedet-devel-load.el")
+        (load "~/.emacs.d/override/cedet/cedet-devel-load.el"))
 
-    (when (file-exists-p "~/.emacs.d/override/org-mode/lisp")
-      (add-to-list 'load-path "~/.emacs.d/override/org-mode/lisp")
-      (add-to-list 'load-path "~/.emacs.d/override/org-mode/contrib/lisp")
-      (require 'org))
+      (when (file-exists-p "~/.emacs.d/override/org-mode/lisp")
+        (add-to-list 'load-path "~/.emacs.d/override/org-mode/lisp")
+        (add-to-list 'load-path "~/.emacs.d/override/org-mode/contrib/lisp")
+        (require 'org))
 
-    (require 'cl)
+      (require 'cl)
 
-    (require 'package)
-    (package-initialize)
+      (require 'package)
+      (package-initialize)
 
-    ;; orgmode.org unfortunately does not support https
-    (add-to-list 'package-archives
-                 '("org" . "http://orgmode.org/elpa/") t)
-    (add-to-list 'package-archives
-                 '("gnu" . "https://elpa.gnu.org/packages/") t)
-    (add-to-list 'package-archives
-                 '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-    (add-to-list 'package-archives
-                 '("melpa" . "https://melpa.org/packages/") t)
+      ;; orgmode.org unfortunately does not support https
+      (add-to-list 'package-archives
+                   '("org" . "http://orgmode.org/elpa/") t)
+      (add-to-list 'package-archives
+                   '("gnu" . "https://elpa.gnu.org/packages/") t)
+      (add-to-list 'package-archives
+                   '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+      (add-to-list 'package-archives
+                   '("melpa" . "https://melpa.org/packages/") t)
 
-    (setq custom-file "~/.emacs.d/custom.el")
-    (when (file-exists-p custom-file)
-      (load custom-file))
+      (setq custom-file "~/.emacs.d/custom.el")
+      (when (file-exists-p custom-file)
+        (load custom-file))
 
-    (defvar deos/did-refresh-packages nil
-      "Flag for whether packages have been refreshed yet")
+      (defvar deos/did-refresh-packages nil
+        "Flag for whether packages have been refreshed yet")
 
-    (defun install-pkgs (list)
-      (dolist (pkg list)
-        (progn
-          (if (not (package-installed-p pkg))
-              (progn
-                (if (not deos/did-refresh-packages)
-                    (progn (package-refresh-contents)
-                           (setq deos/did-refresh-packages t)))
-                (package-install pkg))))))
+      (defun install-pkgs (list)
+        (dolist (pkg list)
+          (progn
+            (if (not (package-installed-p pkg))
+                (progn
+                  (if (not deos/did-refresh-packages)
+                      (progn (package-refresh-contents)
+                             (setq deos/did-refresh-packages t)))
+                  (package-install pkg))))))
 
-  ;;Pin some of the packages that go wonky if I use the bleeding edge.
+    ;;Pin some of the packages that go wonky if I use the bleeding edge.
 
-  (when (boundp 'package-pinned-packages)
-    (setq package-pinned-packages
-          '((org-plus-contrib                  . "org")
-            (cider                             . "melpa-stable")
-            (ac-cider                          . "melpa-stable")
-            (clojure-mode                      . "melpa-stable")
-            (clojure-mode-extra-font-locking   . "melpa-stable")
-            (company-cider                     . "melpa-stable"))))
+    (when (boundp 'package-pinned-packages)
+      (setq package-pinned-packages
+            '((org-plus-contrib                  . "org")
+              (cider                             . "melpa-stable")
+              (ac-cider                          . "melpa-stable")
+              (clojure-mode                      . "melpa-stable")
+              (clojure-mode-extra-font-locking   . "melpa-stable")
+              (company-cider                     . "melpa-stable"))))
 
-    (install-pkgs '(use-package))
-    ;; Load use-package, used for loading packages everywhere else
-    (require 'use-package nil t)
-    ;; Set to t to debug package loading or nil to disable
-    (setq use-package-verbose nil)
+      (install-pkgs '(use-package))
+      ;; Load use-package, used for loading packages everywhere else
+      (require 'use-package nil t)
+      ;; Set to t to debug package loading or nil to disable
+      (setq use-package-verbose nil)
 
-    (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+      (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-    (unless (require 'el-get nil 'noerror)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
+      (unless (require 'el-get nil 'noerror)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
 
-    (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-    ;;(el-get 'sync)
+      (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+      ;;(el-get 'sync)
 
-    (defvar after-deos-hook nil
-      "Hooks to run after all of the DEOS has been loaded")
+      (defvar after-deos-hook nil
+        "Hooks to run after all of the DEOS has been loaded")
 
-    (defvar emacs-start-time (current-time)
-      "Time Emacs was started.")
+      (defvar emacs-start-time (current-time)
+        "Time Emacs was started.")
 
-    ;; Installed by `make install`
-    (add-to-list 'load-path "~/.emacs.d/deos/")
+      ;; Installed by `make install`
+      (add-to-list 'load-path "~/.emacs.d/deos/")
 
-    (defmacro try-load (module)
-      "Try to load the given module, logging an error if unable to load"
-      `(condition-case ex
-           (require ,module)
-         ('error
-          (message "DEOS: Unable to load [%s] module: %s" ,module ex))))
+      (defmacro try-load (module)
+        "Try to load the given module, logging an error if unable to load"
+        `(condition-case ex
+             (require ,module)
+           ('error
+            (message "DEOS: Unable to load [%s] module: %s" ,module ex))))
 
-    ;; Setup load path
-    (try-load 'init-core)
-    (try-load 'init-utils)
-    (try-load 'init-theme)
-    (try-load 'init-org)
-    (try-load 'init-notifications)
-    (try-load 'init-navigation)
-    (try-load 'init-writing)
-    (try-load 'init-ibuffer)
-    (try-load 'init-completion)
-    (try-load 'init-develop)
-    (try-load 'init-java)
-    (try-load 'init-editing)
-    (try-load 'init-elm)
-    ;;(try-load 'init-ido)
-    (try-load 'init-misc)
-    (try-load 'init-lisp)
-    (try-load 'init-git)
-    (try-load 'init-dired)
-    (try-load 'init-python)
-    (try-load 'init-grep)
-    (try-load 'init-helm)
-    ;;(try-load 'init-ivy)
-    (try-load 'init-eshell)
+      ;; Setup load path
+      (try-load 'init-core)
+      (try-load 'init-utils)
+      (try-load 'init-theme)
+      (try-load 'init-org)
+      (try-load 'init-notifications)
+      (try-load 'init-navigation)
+      (try-load 'init-remote)
+      (try-load 'init-writing)
+      (try-load 'init-ibuffer)
+      (try-load 'init-completion)
+      (try-load 'init-develop)
+      (try-load 'init-java)
+      (try-load 'init-editing)
+      (try-load 'init-elm)
+      ;;(try-load 'init-ido)
+      (try-load 'init-misc)
+      (try-load 'init-lisp)
+      (try-load 'init-git)
+      (try-load 'init-dired)
+      (try-load 'init-python)
+      (try-load 'init-grep)
+      (try-load 'init-helm)
+      ;;(try-load 'init-ivy)
+      (try-load 'init-eshell)
 
-    ;; Hooks
-    (add-hook 'after-deos-hook
-              (lambda ()
-                (message "The Daniel Newman Emacs System has been loaded")))
+      ;; Hooks
+      (add-hook 'after-deos-hook
+                (lambda ()
+                  (message "The Daniel Newman Emacs System has been loaded")))
 
-    (defun deos/time-since-start ()
-      (float-time (time-subtract (current-time)
-                                 emacs-start-time)))
+      (defun deos/time-since-start ()
+        (float-time (time-subtract (current-time)
+                                   emacs-start-time)))
 
-    (add-hook 'after-deos-hook
-              `(lambda ()
-                 (let ((elapsed (deos/time-since-start)))
-                   (message "Loading %s...done (%.3fs)"
-                            ,load-file-name elapsed))) t)
-    (add-hook 'after-init-hook
-              `(lambda ()
-                 (let ((elapsed (deos/time-since-start)))
-                   (message "Loading %s...done (%.3fs) [after-init]"
-                            ,load-file-name elapsed))) t)
-    (run-hooks 'after-deos-hook)
+      (add-hook 'after-deos-hook
+                `(lambda ()
+                   (let ((elapsed (deos/time-since-start)))
+                     (message "Loading %s...done (%.3fs)"
+                              ,load-file-name elapsed))) t)
+      (add-hook 'after-init-hook
+                `(lambda ()
+                   (let ((elapsed (deos/time-since-start)))
+                     (message "Loading %s...done (%.3fs) [after-init]"
+                              ,load-file-name elapsed))) t)
+      (run-hooks 'after-deos-hook)
 
-    (setq initial-scratch-message ";; ╔═╗┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬\n;; ╚═╗│  ├┬┘├─┤ │ │  ├─┤\n;; ╚═╝└─┘┴└─┴ ┴ ┴ └─┘┴ ┴\n")
+      (setq initial-scratch-message ";; ╔═╗┌─┐┬─┐┌─┐┌┬┐┌─┐┬ ┬\n;; ╚═╗│  ├┬┘├─┤ │ │  ├─┤\n;; ╚═╝└─┘┴└─┴ ┴ ┴ └─┘┴ ┴\n")
 
-    ;; turn off debugging after emacs starts
-    (setq debug-on-error nil)
-    (setq debug-on-quit nil)
+      ;; turn off debugging after emacs starts
+      (setq debug-on-error nil)
+      (setq debug-on-quit nil)
 #+END_SRC

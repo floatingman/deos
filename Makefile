@@ -18,6 +18,7 @@ init-java.el \
 init-python.el \
 init-utils.el \
 init-notifications.el \
+init-remote.el \
 init-misc.el \
 init-elm.el \
 init-git.el \
