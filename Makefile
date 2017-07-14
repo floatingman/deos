@@ -17,6 +17,7 @@ init-develop.el \
 init-java.el \
 init-python.el \
 init-utils.el \
+init-notifications.el \
 init-misc.el \
 init-elm.el \
 init-git.el \
