@@ -3,18 +3,43 @@
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
-#+begin_src emacs-lisp
-;; No need for ~ files when editing
-(setq create-lockfiles nil)
-
-(use-package guide-key
-  :ensure t
-  :diminish guide-key-mode
-  :config
-  (setq guide-key/guide-key-sequence '("C-x" "C-c" "C-x 4" "C-x 5" "C-c ; f" "C-c ' f" "C-x n" "C-x C-r" "C-x r" "M-s" "C-h" "C-c p"))
-  (add-hook 'after-init-hook (lambda ()
-				(guide-key-mode 1))))
-
+#+BEGIN_SRC emacs-lisp
 (provide 'init-misc)
+#+END_SRC
 
-#+end_src
+* Miscellaneous things that I haven't found a place for
+
+* Download Buffer
+#+BEGIN_SRC emacs-lisp
+(defun deos/popup-downloads ()
+  "Pop up the downloads buffer"
+  (interactive)
+  (when (not (get-buffer "*eshell downloads*"))
+    (let ((eshell-buffer-name "*eshell downloads*"))
+      (eshell)))
+  (popwin:popup-buffer-tail "*eshell downloads*"))
+
+;; eshell 4 is always my "download stuff" buffer
+(global-set-key (kbd "C-x M-d") #'deos/popup-downloads)
+#+END_SRC
+
+* Weather
+#+BEGIN_SRC emacs-lisp
+(use-package wttrin
+  :ensure t
+  :init
+  (setq wttrin-default-cities '("Nashville")))
+#+END_SRC
+
+* Browse stack overflow
+#+BEGIN_SRC emacs-lisp
+(use-package sx
+  :ensure t)
+#+END_SRC
+
+* Pretty buffer colors
+
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-mode
+  :ensure t)
+#+END_SRC
