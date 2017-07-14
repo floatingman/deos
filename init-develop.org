@@ -448,7 +448,7 @@ Paredit is great for editing anything requiring closures
       (bind-key "C-(" #'paredit-forward-barf-sexp paredit-mode-map)
       (bind-key "C-)" #'paredit-forward-slurp-sexp paredit-mode-map)
       (bind-key ")" #'paredit-close-parenthesis paredit-mode-map)
-      (bind-key "M-\"" #'my/other-window-backwards paredit-mode-map)
+      (bind-key "M-\"" #'deos/other-window-backwards paredit-mode-map)
       (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
       )
 #+end_src

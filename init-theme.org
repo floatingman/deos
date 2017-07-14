@@ -163,11 +163,11 @@ Fonts I may or may not use (in no particular order):
 (setq deos/original-height 90)
 
 (defun deos/setup-fonts ()
-  (when (eq window-system 'x)
-    ;; default font and variable-pitch fonts
-    (set-face-attribute 'default nil
-                        :family "Hack"
-                        :height deos/original-height)
+(when *is-gui*
+;; default font and variable-pitch fonts
+(set-face-attribute 'default nil
+                    :family "Hack"
+                    :height deos/original-height)
     (dolist (face '(mode-line mode-line-inactive minibuffer-prompt))
       (set-face-attribute face nil :family "Hack"
                           :height deos/original-height))
@@ -177,7 +177,7 @@ Fonts I may or may not use (in no particular order):
     ;;(set-fontset-font t 'unicode "DejaVu Sans Mono" nil 'prepend)
     ))
 
-(when (eq window-system 'x)
+(when *is-gui*
   (add-hook 'after-init-hook #'deos/setup-fonts))
 #+END_SRC
 
