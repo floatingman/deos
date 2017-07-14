@@ -4,61 +4,123 @@
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp
-(setq tab-always-indent 'complete)
-(add-to-list 'completion-styles 'initals t)
-(setq completion-cycle-threshold 5)
+(provide 'init-completion)
+#+END_SRC
 
+* Dabbrev
+
+Dabbrev is built in to Emacs, being something that is grate at greedy completion
+
+#+BEGIN_SRC emacs-lisp
+    (use-package dabbrev
+      :init
+      (setq dabbrev-case-fold-search nil))
+#+END_SRC
+
+* Hippie-expand
+
+#+BEGIN_SRC emacs-lisp
+(use-package hippie-exp
+  :init
+  ;; force hippie-expand completions to be case-sensitive
+  (defadvice hippie-expand (around hippie-expand-case-fold activate)
+    "Try to do case-sensitive matching (not effective with all functions)."
+    (let ((case-fold-search nil))
+      ad-do-it))
+
+  :config
+  (setq hippie-expand-try-functions-list
+        '(;; Try to expand word "dynamically", searching the current buffer.
+          try-expand-dabbrev
+          ;; Try to expand word "dynamically", searching all other buffers.
+          try-expand-dabbrev-all-buffers
+          ;; Try to expand word "dynamically", searching the kill ring.
+          try-expand-dabbrev-from-kill
+          ;; Try to complete text as a file name, as many characters as unique.
+          try-complete-file-name-partially
+          ;; Try to complete text as a file name.
+          try-complete-file-name
+          ;; Try to expand word before point according to all abbrev tables.
+          try-expand-all-abbrevs
+          ;; Try to complete the current line to an entire line in the buffer.
+          try-expand-list
+          ;; Try to complete the current line to an entire line in the buffer.
+          try-expand-line
+          ;; Try to complete the current line to an entire line in a different
+          ;; buffer.
+          try-expand-line-all-buffers
+          ;; Try to complete as an Emacs Lisp symbol, as many characters as
+          ;; unique.
+          try-complete-lisp-symbol-partially
+          ;; Try to complete word as an Emacs Lisp symbol.
+          try-complete-lisp-symbol)))
+#+END_SRC
+
+* Company
+
+#+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
-  :diminish "CMP"
-  :bind (("M-C-/" . company-complete)
-	 :map company-mode-map
-	 ("M-/" . company-complete)
-	 :map company-active-map
-	 ("M-/" . company-select-next)
-	 ("C-n" . company-select-next)
-	 ("C-p" . company-select-previous))
+  :diminish company-mode
+  ;; stupid flyspell steals the binding I really want, `C-.`
+  :bind (("C-c ." . company-complete)
+         ("C-." . company-complete))
   :init
-  (global-company-mode 1)
-  (setq-default company-backends '((company-capf company-dabbrev-code) company-dabbrev)
-		company-dabbrev-other-buffers 'all)
-  :config
+  (add-hook 'after-init-hook #'global-company-mode)
   (use-package company-quickhelp
     :ensure t
-    :defer 10
-    :config
-    (company-quickhelp-mode 1)))
-
-(defun sanityinc/local-push-company-backend (backend)
-  "Add BACKEND to a buffer-local version of `company-backends'."
-  (set (make-local-variable 'company-backends)
-       (append (list backend)
-	        company-backends)))
-
-(defun sanityinc/dabbrev-friend-buffer (other-buffer)
-  (< (buffer-size other-buffer) (* 1 1024 1024)))
-(setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
-
-(global-set-key (kbd "M-/") 'hippie-expand)
-
-(setq hippie-expand-try-functions-list
-      '(try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-	try-expand-dabbrev-from-kill
-        ))
-
-(use-package yasnippet
-  :ensure t
-  :bind (("M-=" . yas-insert-snippet))
-  :diminish yas-minor-mode
-  :init
-  (yas-global-mode 1)
+    :init (add-hook 'company-mode-hook #'company-quickhelp-mode)
+    :config (setq company-quickhelp-delay 2))
+  ;; Set up statistics for company completions
+  (use-package company-statistics
+    :ensure t
+    :init (add-hook 'after-init-hook #'company-statistics-mode))
   :config
-  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
-  (yas-reload-all))
+  (setq company-selection-wrap-around t
+        ;; do or don't automatically start completion after <idle time>
+        company-idle-delay 1.0
+        ;; at least 3 letters need to be there though
+        company-minimum-prefix-length 3
+        ;; show completion numbers for hotkeys
+        company-show-numbers t
+        ;; align annotations to the right
+        company-tooltip-align-annotations t
+        company-search-regexp-function #'company-search-flex-regexp)
+  (bind-keys :map company-active-map
+             ("C-n" . company-select-next)
+             ("C-p" . company-select-previous)
+             ("C-d" . company-show-doc-buffer)
+             ("C-l" . company-show-location)
+             ("<tab>" . company-complete)))
+#+END_SRC
 
-(provide 'init-completion)
+A few things to make Company work with dabbrev
 
+#+BEGIN_SRC emacs-lisp
+(use-package company-dabbrev
+  :init
+  (setq company-dabbrev-ignore-case nil
+        ;; don't downcase dabbrev suggestions
+        company-dabbrev-downcase nil
+        company-dabbrev-downcase nil))
+
+(use-package company-dabbrev-code
+  :init
+  (setq company-dabbrev-code-modes t
+        company-dabbrev-code-ignore-case nil))
+#+END_SRC
+
+* Smart-tab
+#+BEGIN_SRC emacs-lisp
+(use-package smart-tab
+  :ensure t
+  :defer t
+  :diminish ""
+  :init
+  (global-smart-tab-mode 1)
+  (setq smart-tab-using-hippie-expand t)
+  :config
+  (add-to-list 'smart-tab-disabled-major-modes 'mu4e-compose-mode)
+  (add-to-list 'smart-tab-disabled-major-modes 'erc-mode)
+  (add-to-list 'smart-tab-disabled-major-modes 'shell-mode))
 #+END_SRC

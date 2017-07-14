@@ -757,7 +757,8 @@ Adds asynchronous line numbers to programming-mode files
 #+END_SRC
 
 
-#+BEGIN_SRC emacs-lisp
+This is a line number hack that I was trying out to only display line-numbers when using goto-line
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package nlinum
   :ensure t
   :preface
