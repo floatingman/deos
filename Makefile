@@ -13,6 +13,7 @@ init-ivy.el \
 init-navigation.el \
 init-ido.el \
 init-lisp.el \
+init-irc.el \
 init-rss.el \
 init-develop.el \
 init-java.el \

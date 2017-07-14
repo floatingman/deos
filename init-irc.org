@@ -1,0 +1,31 @@
+#+TITLE: IRC Module
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init-irc)
+#+END_SRC
+
+* Introduction
+
+This will setup slack
+
+#+BEGIN_SRC emacs-lisp
+                        (use-package slack
+                          :ensure t
+                          :disabled t
+                          :commands (slack-start)
+                          :init
+                          (require 'slack)
+                          (require 'slack-message-formatter)
+                          ;; No Emoji (sorry internet)
+                          (setq slack-buffer-emojify nil)
+                          (setq slack-prefer-current-team t)
+                          ;; The `slack-register-team' goes into ~/.slackpass
+                          (when (file-exists-p "~/.slackpass")
+                            (load-file "~/.slackpass")))
+#+END_SRC
