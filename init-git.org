@@ -4,102 +4,161 @@
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
 
 #+BEGIN_SRC emacs-lisp
-(use-package git-blamed
-  :ensure t)
-(use-package gitignore-mode
-  :ensure t)
-(use-package gitconfig-mode
-  :ensure t)
-(use-package git-timemachine
-  :ensure t)
+  (use-package magit
+    :ensure t
+    :bind (("C-x g" . magit-status))
+    :init (add-hook 'magit-mode-hook 'deos/turn-on-hl-line)
+    :config
+    (setq git-commit-summary-max-length 70)
+    (setenv "GIT_PAGER" "")
+    (if (file-exists-p "/usr/local/bin/emacsclient")
+        (setq magit-emacsclient-executable (executable-find "emacsclient")))
+    (defun deos/magit-browse ()
+      "Browse to the project's github URL, if available"
+      (interactive)
+      (let ((url (with-temp-buffer
+                            (unless (zerop (call-process-shell-command
+                                            "git remote -v" nil t))
+                              (error "Failed: 'git remote -v'"))
+                            (goto-char (point-min))
+                            (when (re-search-forward
+                                   "github\\.com[:/]\\(.+?\\)\\.git" nil t)
+                              (format "https://github.com/%s" (match-string 1))))))
+        (unless url
+          (error "Can't find repository URL"))
+        (browse-url url)))
 
-(use-package magit
+  (define-key magit-mode-map (kbd "C-c C-b") #'deos/magit-browse)
+  ;; Magit has its own binding, so re-bind them
+  (bind-key "M-1" #'deos/create-or-switch-to-eshell-1 magit-mode-map)
+  (bind-key "M-2" #'deos/create-or-switch-to-eshell-2 magit-mode-map)
+  (bind-key "M-3" #'deos/create-or-switch-to-eshell-3 magit-mode-map)
+  (bind-key "M-4" #'deos/create-or-switch-to-eshell-4 magit-mode-map)
+
+  ;; Allow gpg signing merge commits
+  (magit-define-popup-option 'magit-merge-popup
+                             ?S "Sign using gpg" "--gpg-sign="
+                             #'magit-read-gpg-secret-key))
+
+  (use-package magit-gh-pulls
+   :ensure t
+   :init
+   (add-hook 'magit-mode-hook #'turn-on-magit-gh-pulls)
+   :config
+   ;; work around https://github.com/sigma/magit-gh-pulls/issues/83
+   (setq magit-gh-pulls-pull-detail-limit 50))
+
+  (use-package magithub
   :ensure t
-  :bind (("M-<f12>" . magit-status)
-	 ("C-x g" . magit-status)
-	 ("C-x M-g" . magit-dispatch-popup)
-	 :map magit-status-mode-map
-	 ("C-M-<up>" . magit-section-up))
+  :disabled t
+  :after magit
   :config
-  (setq-default magit-diff-refine-hunk t)
-  (fullframe magit-status magit-mode-quit-window))
+  (magithub-feature-autoinject t)
 
-(use-package fullframe
-  :ensure t)
+  ;; Workaround for https://github.com/vermiculus/magithub/issues/71
+  (defun magithub-issue--sort (issues)
+    "Sort ISSUES by issue number."
+    (sort issues
+          (lambda (a b) (> (plist-get a :number)
+                      (plist-get b :number))))))
 
-(use-package git-commit
+  (use-package git-gutter
   :ensure t
+  :when window-system
+  :defer t
+  :bind (("C-x P" . git-gutter:popup-hunk)
+         ("C-x p" . git-gutter:previous-hunk)
+         ("C-x n" . git-gutter:next-hunk)
+         ("C-c G" . git-gutter:popup-hunk))
+  :diminish ""
+  :init
+  (add-hook 'prog-mode-hook #'git-gutter-mode)
+  (add-hook 'text-mode-hook #'git-gutter-mode)
   :config
-  (add-hook 'git-commit-mode-hook 'goto-address-mode))
+  (use-package git-gutter-fringe
+    :ensure t
+    :init
+    (require 'git-gutter-fringe)
+    (when (fboundp 'define-fringe-bitmap)
+      (define-fringe-bitmap 'git-gutter-fr:added
+        [224 224 224 224 224 224 224 224 224 224 224 224 224
+             224 224 224 224 224 224 224 224 224 224 224 224]
+        nil nil 'center)
+      (define-fringe-bitmap 'git-gutter-fr:modified
+        [224 224 224 224 224 224 224 224 224 224 224 224 224
+             224 224 224 224 224 224 224 224 224 224 224 224]
+        nil nil 'center)
+      (define-fringe-bitmap 'git-gutter-fr:deleted
+        [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+        nil nil 'center))))
 
-
-;; Convenient binding for vc-git-grep
-(global-set-key (kbd "C-x v f") 'vc-git-grep)
-
-(after-load 'compile
-  (dolist (defn (list '(git-svn-updated "^\t[A-Z]\t\\(.*\\)$" 1 nil nil 0 1)
-                      '(git-svn-needs-update "^\\(.*\\): needs update$" 1 nil nil 2 1)))
-    (add-to-list 'compilation-error-regexp-alist-alist defn)
-    (add-to-list 'compilation-error-regexp-alist (car defn))))
-
-(defvar git-svn--available-commands nil "Cached list of git svn subcommands")
-(defun git-svn--available-commands ()
-  (or git-svn--available-commands
-      (setq git-svn--available-commands
-            (sanityinc/string-all-matches
-             "^  \\([a-z\\-]+\\) +"
-             (shell-command-to-string "git svn help") 1))))
-
-(defun git-svn (dir command)
-  "Run a git svn subcommand in DIR."
-  (interactive (list (read-directory-name "Directory: ")
-                     (completing-read "git-svn command: " (git-svn--available-commands) nil t nil nil (git-svn--available-commands))))
-  (let* ((default-directory (vc-git-root dir))
-         (compilation-buffer-name-function (lambda (major-mode-name) "*git-svn*")))
-    (compile (concat "git svn " command))))
-
-(use-package git-messenger
+  (use-package git-messenger
   :ensure t
-  :bind (("C-x v p" . git-messenger:popup-message)))
-
-(use-package yagist
-  :ensure t)
-
-(use-package bug-reference-github
-  :ensure t
+  :commands git-messenger:popup-message
+  :bind (("C-c M" . git-messenger:popup-message))
   :config
-  (add-hook 'prog-mode-hook 'bug-reference-prog-mode))
+  (setq git-messenger:show-detail t))
 
-(use-package github-clone
+  (use-package browse-at-remote
+  :ensure t
+  :commands browse-at-remote
+  :bind ("C-c g g" . browse-at-remote))
+
+  (use-package git-timemachine
   :ensure t)
 
-(use-package github-issues
+  (use-package git-annex
   :ensure t)
 
-(use-package magit-gh-pulls
+  (use-package magit-annex
   :ensure t)
 
-(provide 'init-git)
+  (use-package ediff
+  :init
+  (setq
+   ;; Always split nicely for wide screens
+   ediff-split-window-function 'split-window-horizontally)
+  (defun ediff-copy-both-to-C ()
+    (interactive)
+    (ediff-copy-diff
+     ediff-current-difference nil 'C nil
+     (concat
+      (ediff-get-region-contents
+       ediff-current-difference 'A ediff-control-buffer)
+      (ediff-get-region-contents
+       ediff-current-difference 'B ediff-control-buffer))))
+  (defun add-d-to-ediff-mode-map ()
+    (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
+
+  (defhydra deos/hydra-smerge
+  (:color red :hint nil
+          :pre (smerge-mode 1))
+  "
+^Move^ ^Keep^ ^Diff^ ^Pair^
+------------------------------------------------------
+_n_ext _b_ase _R_efine _<_: base-mine
+_p_rev _m_ine _E_diff _=_: mine-other
+^ ^ _o_ther _C_ombine _>_: base-other
+^ ^ _a_ll _r_esolve
+_q_uit _RET_: current
+"
+  ("RET" smerge-keep-current)
+  ("C" smerge-combine-with-next)
+  ("E" smerge-ediff)
+  ("R" smerge-refine)
+  ("a" smerge-keep-all)
+  ("b" smerge-keep-base)
+  ("m" smerge-keep-mine)
+  ("n" smerge-next)
+  ("o" smerge-keep-other)
+  ("p" smerge-prev)
+  ("r" smerge-resolve)
+  ("<" smerge-diff-base-mine)
+  ("=" smerge-diff-mine-other)
+  (">" smerge-diff-base-other)
+  ("q" nil :color blue))
+
+  (provide 'init-git)
 
 #+END_SRC
-
-
-Adding this here instead of keeping a seperate
-
-#+begin_src emacs-lisp
-(use-package diff-hl
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'diff-hl-mode)
-  (add-hook 'vc-dir-mode-hook 'diff-hl-mode)
-  (after-load 'diff-hl
-    (define-key diff-hl-mode-map
-      (kbd "<left-fringe> <mouse-1>")
-      'diff-hl-diff-goto-hunk)))
-
-(use-package browse-at-remote
-  :ensure t)
-
-(provide 'init-vc)
-
-#+end_src

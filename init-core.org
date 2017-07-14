@@ -369,14 +369,14 @@ Desktop+ will automatically save the desktop when Emacs exits
   :ensure t
   :disabled t
   :init
-  (defun eos/load-default-desktop ()
+  (defun deos/load-default-desktop ()
     "Load the default EOS desktop, assuming one has been saved
 with the name `default'."
     (interactive)
     (desktop+-load "default")
     (message "Loaded \"default\" desktop."))
 
-  (add-hook 'after-init-hook #'eos/load-default-desktop))
+  (add-hook 'after-init-hook #'deos/load-default-desktop))
 #+END_SRC
 
 By default, my machine drops me in to a =*scratch*= buffer. Originally designed
@@ -523,7 +523,7 @@ littering everywhere.
 #+END_SRC
 
 Need to make sure the directory exists in the initializing shell script, so this
-goes into =core-eos.sh=
+goes into =core-deos.sh=
 
 #+BEGIN_SRC sh :tangle sh/core-deos.sh
 mkdir -p ~/.emacs_backups
@@ -713,15 +713,15 @@ using a big font size and I need more eshell space
   ;; Default is 1.0, but I find this adjust just slightly less, which is nice
   (setq golden-ratio-adjust-factor .9)
 
-  (defun eos/helm-alive-p ()
+  (defun deos/helm-alive-p ()
     (if (boundp 'helm-alive-p)
         (symbol-value 'helm-alive-p)))
-  (defun eos/ispell-running-p ()
+  (defun deos/ispell-running-p ()
     (and (boundp 'ispell-choices-buffer)
          (get-buffer ispell-choices-buffer)))
 
   ;; Inhibit helm and ispell buffers
-  (setq golden-ratio-inhibit-functions '(eos/helm-alive-p eos/ispell-running-p))
+  (setq golden-ratio-inhibit-functions '(deos/helm-alive-p deos/ispell-running-p))
 
   (setq golden-ratio-exclude-buffer-regexp '("\\`\\*[Hh]elm.*\\*\\'")
         golden-ratio-exclude-buffer-names '("*Org Select*")
@@ -807,12 +807,12 @@ install mupdf= on osx)
   (define-key doc-view-mode-map (kbd "q")
     #'kill-this-buffer))
 
-(defun eos/turn-on-viewing-mode ()
+(defun deos/turn-on-viewing-mode ()
   "Turn on the viewing mode, to make looking through logs easier"
   (interactive)
   (view-mode 1)
-  (when (fboundp 'eos/turn-on-hl-line)
-    (eos/turn-on-hl-line)))
+  (when (fboundp 'deos/turn-on-hl-line)
+    (deos/turn-on-hl-line)))
 #+END_SRC
 
 I also use the 'pdf-tools' package, which is *really* nice for viewing PDF
@@ -862,7 +862,7 @@ kill them and all that, when I do, I want it to auto-update
 #+BEGIN_SRC emacs-lisp
 (setq-default proced-auto-update-flag t)
 (setq-default proced-auto-update-interval 5)
-(add-hook 'proced-mode-hook 'eos/turn-on-hl-line)
+(add-hook 'proced-mode-hook 'deos/turn-on-hl-line)
 #+END_SRC
 
 I don't really need bi-directional display, so let's speed up long lines
@@ -1021,12 +1021,12 @@ issues, so this is special handling of it...
 #+BEGIN_SRC emacs-lisp
 (when (eq window-system 'mac)
 
-  (defun eos/max-fullscreen ()
+  (defun deos/max-fullscreen ()
     (interactive)
     (set-frame-parameter nil 'fullscreen 'fullboth))
 
   ;; fullscreen
-  (add-hook 'after-init-hook #'eos/max-fullscreen)
+  (add-hook 'after-init-hook #'deos/max-fullscreen)
   ;; use alt as hyper
   (setq mac-option-modifier 'meta)
   ;; use command as meta
@@ -1081,24 +1081,24 @@ In most non-programming modes, =M-.= can be used to spellcheck the word
   ;;(add-hook 'prog-mode-hook #'flyspell-prog-mode)
 
   ;; start with it turned off
-  (setq eos/programming-spellcheck nil)
+  (setq deos/programming-spellcheck nil)
 
   (use-package shut-up :ensure t)
-  (defun eos/flyspell-buffer-quietly ()
+  (defun deos/flyspell-buffer-quietly ()
     (interactive)
-    (when eos/programming-spellcheck
+    (when deos/programming-spellcheck
       (save-excursion (shut-up (flyspell-buffer)))))
 
   ;; But, the problem then is that you get spell checking as you go, instead,
   ;; I think I'd rather have the buffer spellchecked when it's saved, and still
   ;; be able to go through the errors
-  (defun eos/turn-on-programming-spellcheck ()
+  (defun deos/turn-on-programming-spellcheck ()
     (interactive)
     (flyspell-mode -1)
     (when (not (and (boundp 'org-src-mode)
                     org-src-mode))
       ;; Tell the local buffer it's safe to flyspell this after save
-      (setq-local eos/programming-spellcheck t)
+      (setq-local deos/programming-spellcheck t)
       ;; Automatically becomes local
       (setq flyspell-generic-check-word-predicate
             #'flyspell-generic-progmode-verify)
@@ -1106,8 +1106,8 @@ In most non-programming modes, =M-.= can be used to spellcheck the word
       ;; we still need to be able to hit it, so bind it locally
       (local-set-key (kbd "C-,") 'flyspell-goto-next-error)))
   ;; Turned off right now, as I'm still tweaking this
-  ;;(add-hook 'after-save-hook #'eos/flyspell-buffer-quietly)
-  (add-hook 'prog-mode-hook #'eos/turn-on-programming-spellcheck)
+  ;;(add-hook 'after-save-hook #'deos/flyspell-buffer-quietly)
+  (add-hook 'prog-mode-hook #'deos/turn-on-programming-spellcheck)
   :config
   (define-key flyspell-mode-map (kbd "C-.") 'company-complete))
 #+END_SRC
@@ -1125,7 +1125,7 @@ interface to the parts of EOS.
 #+BEGIN_SRC emacs-lisp
 (use-package hydra :ensure t)
 
-(defhydra eos/hydra-toggle-map nil
+(defhydra deos/hydra-toggle-map nil
   "
 ^Toggle^
 ^^^^^^^^----------------------
@@ -1148,17 +1148,17 @@ _q_: quit
   ("F" auto-fill-mode :exit t)
   ("l" toggle-truncate-lines :exit t)
   ("r" read-only-mode :exit t)
-  ;; This gets turned on/off unconditionally (not the eos/turn-on-hl-line-mode)
+  ;; This gets turned on/off unconditionally (not the deos/turn-on-hl-line-mode)
   ("h" hl-line-mode :exit t)
-  ("v" eos/turn-on-viewing-mode :exit t)
-  ("n" eos/narrow-or-widen-dwim :exit t)
-  ("+" eos/monitor-jack-in :exit t)
-  ("-" eos/monitor-jack-out :exit t)
-  ("0" eos/monitor-reset :exit t)
-  ("R" eos/code-reading-mode :exit t)
+  ("v" deos/turn-on-viewing-mode :exit t)
+  ("n" deos/narrow-or-widen-dwim :exit t)
+  ("+" deos/monitor-jack-in :exit t)
+  ("-" deos/monitor-jack-out :exit t)
+  ("0" deos/monitor-reset :exit t)
+  ("R" deos/code-reading-mode :exit t)
   ("q" nil :exit t))
 
-(defhydra eos/hydra-next-error nil
+(defhydra deos/hydra-next-error nil
   "Error Selection"
   ("`" next-error "next")
   ("j" next-error "next" :bind nil)
@@ -1169,7 +1169,7 @@ _q_: quit
   ("l" flycheck-list-errors "list-errors" :exit t)
   ("q" nil "quit" :color red))
 
-(defhydra eos/hydra-macro
+(defhydra deos/hydra-macro
   (:pre
    (when defining-kbd-macro
      (kmacro-end-macro 1)))
@@ -1210,7 +1210,7 @@ Here's a Hydra for information about the system (and emacs) that I stole from a
 different user:
 
 #+BEGIN_SRC emacs-lisp
-(defhydra eos/hydra-about-emacs ()
+(defhydra deos/hydra-about-emacs ()
   "
     About Emacs                                                        [_q_] quit
     ^^--------------------------------------------------------------------------
@@ -1241,7 +1241,7 @@ different user:
 And finally, the main EOS Hydra for entry:
 
 #+BEGIN_SRC emacs-lisp
-(defhydra eos/hydra nil
+(defhydra deos/hydra nil
   "
 ╭────────────────────────────────────────────────────────╯
   [_a_] Org Agenda       [_E_] ERC       [_m_] Mail
@@ -1254,32 +1254,32 @@ And finally, the main EOS Hydra for entry:
   [_q_] quit
 "
 
-  ("`" eos/hydra-next-error/body :exit t)
-  ("(" eos/hydra-macro/body :exit t)
+  ("`" deos/hydra-next-error/body :exit t)
+  ("(" deos/hydra-macro/body :exit t)
   ("a" (org-agenda nil " ") :exit t)
-  ("b" eos/popup-project-eshell :exit t)
-  ("A" eos/hydra-about-emacs/body :exit t)
-  ("t" eos/hydra-toggle-map/body :exit t)
-  ("T" eos/start-or-jump-to-twitter :exit t)
+  ("b" deos/popup-project-eshell :exit t)
+  ("A" deos/hydra-about-emacs/body :exit t)
+  ("t" deos/hydra-toggle-map/body :exit t)
+  ("T" deos/start-or-jump-to-twitter :exit t)
   ("g" gnus :exit t)
-  ("d" eos/popup-downloads :exit t)
+  ("d" deos/popup-downloads :exit t)
   ("D" debbugs-gnu :exit t)
   ("B" helm-bookmarks :exit t)
   ("C" es-command-center :exit t)
-  ("m" eos/switch-to-mail :exit t)
-  ("M" eos/hydra-mpd/body :exit t)
+  ("m" deos/switch-to-mail :exit t)
+  ("M" deos/hydra-mpd/body :exit t)
   ("c" multi-compile-run :exit t)
   ("E" (when (y-or-n-p "Really start ERC?") (start-erc)) :exit t)
   ("R" elfeed :exit t)
-  ("s" eos/hydra-skeleton/body :exit t)
-  ("S" eos/hydra-smerge/body :exit t)
+  ("s" deos/hydra-skeleton/body :exit t)
+  ("S" deos/hydra-smerge/body :exit t)
   ("p" proced :exit t)
   ("P" prodigy :exit t)
   ("W" wttrin :exit t)
   ("q" nil :exit t))
 
 ;; Bind the main EOS hydra to M-t
-(global-set-key (kbd "M-t") 'eos/hydra/body)
+(global-set-key (kbd "M-t") 'deos/hydra/body)
 #+END_SRC
 
 * Multiple Emacs Perspectives with Eyebrowse
@@ -1293,7 +1293,7 @@ Eyebrowse is a great package for workspaces in Emacs.
   :ensure t
   :init
   (progn
-    (defun eos/create-eyebrowse-setup ()
+    (defun deos/create-eyebrowse-setup ()
       (interactive)
       "Create a default window config, if none is present"
       (when (not (eyebrowse--window-config-present-p 4))
@@ -1306,7 +1306,7 @@ Eyebrowse is a great package for workspaces in Emacs.
           eyebrowse-new-workspace t)
     (eyebrowse-mode 1)
     (global-set-key (kbd "C-'") 'eyebrowse-next-window-config)
-    (add-hook 'after-init-hook #'eos/create-eyebrowse-setup)))
+    (add-hook 'after-init-hook #'deos/create-eyebrowse-setup)))
 #+END_SRC
 
 * Automatically saving files
@@ -1350,7 +1350,7 @@ but they also have a bit of downsides...
   (add-to-list 'so-long-minor-modes 'git-gutter-mode)
   (so-long-enable)
 
-  (defun eos/so-long-hook () "Used in `so-long-hook'.")
+  (defun deos/so-long-hook () "Used in `so-long-hook'.")
 
-  (add-hook 'so-long-hook #'eos/so-long-hook))
+  (add-hook 'so-long-hook #'deos/so-long-hook))
 #+END_SRC

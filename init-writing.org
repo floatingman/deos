@@ -64,13 +64,13 @@ all over the place and take forever to load ಠ_ಠ
 #+BEGIN_SRC emacs-lisp
 (require 'skeleton)
 
-(define-skeleton eos/org-header
+(define-skeleton deos/org-header
   "Insert a standard header for org-mode files"
   "Title: "
   "#+TITLE: " str \n
   "#+AUTHOR: " (user-full-name) \n
   "#+EMAIL: " user-mail-address \n
-  "#+SETUPFILE: ~/eos/setupfiles/default.setup
+  "#+SETUPFILE: ~/deos/setupfiles/default.setup
 
 | *Author* | {{{author}}} ({{{email}}})    |
 | *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
@@ -78,21 +78,21 @@ all over the place and take forever to load ಠ_ಠ
 ,* Introduction
 " \n)
 
-(define-skeleton eos/org-wrap-elisp
+(define-skeleton deos/org-wrap-elisp
   "Wrap text with #+BEGIN_SRC / #+END_SRC for the emacs-lisp code"
   nil
   > "#+BEGIN_SRC emacs-lisp" \n
   > _ \n
   > "#+END_SRC" \n)
 
-(define-skeleton eos/org-wrap-source
+(define-skeleton deos/org-wrap-source
   "Wrap text with #+BEGIN_SRC / #+END_SRC for a code type"
   "Language: "
   > "#+BEGIN_SRC " str \n
   > _ \n
   > "#+END_SRC" \n)
 
-(define-skeleton eos/es-make-index
+(define-skeleton deos/es-make-index
   "Insert boilerplate to create an index with `es-mode' syntax"
   "Index name: "
   "POST /" str \n
@@ -114,7 +114,7 @@ all over the place and take forever to load ಠ_ಠ
   > "}" \n ;; mappings
   > "}" \n)
 
-(define-skeleton eos/java-try-catch
+(define-skeleton deos/java-try-catch
   "Wrap code in a Java try/catch"
   nil
   > "try {" \n
@@ -127,13 +127,13 @@ all over the place and take forever to load ಠ_ಠ
 And now let's add a hydra for the skeletons
 
 #+BEGIN_SRC emacs-lisp
-(defhydra eos/hydra-skeleton nil
+(defhydra deos/hydra-skeleton nil
   "Insert Skeleton"
-  ("e" eos/org-wrap-elisp "Wrap as elisp" :exit t)
-  ("s" eos/org-wrap-source "Wrap as source" :exit t)
-  ("i" eos/es-make-index "ES Index" :exit t)
-  ("h" eos/org-header "Org Header" :exit t)
-  ("t" eos/java-try-catch "Wrap with try/catch" :exit t))
+  ("e" deos/org-wrap-elisp "Wrap as elisp" :exit t)
+  ("s" deos/org-wrap-source "Wrap as source" :exit t)
+  ("i" deos/es-make-index "ES Index" :exit t)
+  ("h" deos/org-header "Org Header" :exit t)
+  ("t" deos/java-try-catch "Wrap with try/catch" :exit t))
 #+END_SRC
 
 * Inserting Abbreviations with Abbrev-mode
@@ -151,7 +151,7 @@ And now let's add a hydra for the skeletons
     '(("ooc" "out of curiosity" nil 0)))
   (define-abbrev-table
     'org-mode-abbrev-table
-    '(("<el" "" 'eos/org-wrap-elisp 0))))
+    '(("<el" "" 'deos/org-wrap-elisp 0))))
 #+END_SRC
 
 * Thesaurus
@@ -231,7 +231,7 @@ version of the narrow-or-widen so I don't have to keep remembering which is
 which
 
 #+BEGIN_SRC emacs-lisp
-(defun eos/narrow-or-widen-dwim (p)
+(defun deos/narrow-or-widen-dwim (p)
   "Widen if buffer is narrowed, narrow-dwim otherwise.
 Dwim means: region, org-src-block, org-subtree, or
 defun, whichever applies first. Narrowing to
@@ -257,7 +257,7 @@ is already narrowed."
          (LaTeX-narrow-to-environment))
         (t (narrow-to-defun))))
 
-(global-set-key (kbd "C-x C-n") #'eos/narrow-or-widen-dwim)
+(global-set-key (kbd "C-x C-n") #'deos/narrow-or-widen-dwim)
 #+END_SRC
 
 * Pasting help
@@ -270,7 +270,7 @@ Export an HTML version of the buffer and scp it somewhere
 #+BEGIN_SRC emacs-lisp
 (defvar fci-enabled? nil)
 (defvar fc-enabled? nil)
-(defun eos/surround-scpaste (fun &rest args)
+(defun deos/surround-scpaste (fun &rest args)
   (if (and (boundp 'fci-mode) fci-mode)
       (progn
         (setq fci-enabled? t)
@@ -295,7 +295,7 @@ Export an HTML version of the buffer and scp it somewhere
      scpaste-user-name "dakrone"
      scpaste-user-address "http://writequit.org/")
 ;; Disable fill-column-indicator while scpasting
-(advice-add 'scpaste :around #'eos/surround-scpaste)
+(advice-add 'scpaste :around #'deos/surround-scpaste)
 #+END_SRC
 
 * Escaping strings
@@ -337,29 +337,29 @@ I have to hack something around this to make it fixed for org->html exports
                   (advice-remove 'fci-mode #'fci-mode-override-advice)
                   result)))
 
-  (defvar eos/fci-disabled nil)
-  (make-variable-buffer-local 'eos/fci-disabled)
+  (defvar deos/fci-disabled nil)
+  (make-variable-buffer-local 'deos/fci-disabled)
   ;; Add a hook that disables fci if enabled when the window changes and it
   ;; isn't wide enough to display it.
-  (defun eos/maybe-disable-fci ()
+  (defun deos/maybe-disable-fci ()
     (interactive)
     ;; Disable FCI if necessary
     (when (and fci-mode
                (< (window-width) (or fci-rule-column fill-column)))
       (fci-mode -1)
-      (setq-local eos/fci-disabled t))
+      (setq-local deos/fci-disabled t))
     ;; Enable FCI if necessary
-    (when (and eos/fci-disabled
+    (when (and deos/fci-disabled
                (eq fci-mode nil)
                (> (window-width) (or fci-rule-column fill-column)))
       (fci-mode 1)
-      (setq-local eos/fci-disabled nil)))
+      (setq-local deos/fci-disabled nil)))
 
-  (defun eos/add-fci-disabling-hook ()
+  (defun deos/add-fci-disabling-hook ()
     (interactive)
     (add-hook 'window-configuration-change-hook
-              #'eos/maybe-disable-fci))
-  (add-hook 'prog-mode-hook #'eos/add-fci-disabling-hook))
+              #'deos/maybe-disable-fci))
+  (add-hook 'prog-mode-hook #'deos/add-fci-disabling-hook))
 #+END_SRC
 
 There's also the built-in whitespace mode, which I use to highlight things over
@@ -376,7 +376,7 @@ the fill-column (80 in most programming modes, 140 in Java :P)
         (newline-mark 10 [172 10]) ;; mathematical "not"
         (tab-mark 9 [187 9] [92 9])))
 
-(defun eos/turn-on-whitespace-mode ()
+(defun deos/turn-on-whitespace-mode ()
   (interactive)
   (setq-local whitespace-line-column fill-column)
   (whitespace-mode +1)
@@ -384,7 +384,7 @@ the fill-column (80 in most programming modes, 140 in Java :P)
   (whitespace-newline-mode 1)
   (diminish 'whitespace-newline-mode))
 
-(add-hook 'prog-mode-hook #'eos/turn-on-whitespace-mode)
+(add-hook 'prog-mode-hook #'deos/turn-on-whitespace-mode)
 
 #+END_SRC
 
