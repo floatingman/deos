@@ -2661,3 +2661,19 @@ TODO: document me
 (use-package org-brain
   :ensure t)
 #+END_SRC
+
+* Deft
+I use deft to take quick notes and search through those notes
+
+#+BEGIN_SRC emacs-lisp
+(use-package deft
+  :ensure t
+  :bind ("C-x t" . deft)
+  :config
+  (setq deft-extension '("org" "txt" "tex" "text" "md")
+        deft-directory "~/personal/org/deft/"
+        deft-recursive t
+        deft-use-filter-string-for-filename t
+        deft-text-mode 'org-mode))
+
+#+END_SRC
