@@ -11,8 +11,8 @@
 #+begin_src emacs-lisp
 (use-package groovy-mode
   :ensure t)
-(setq auto-mode-alist
-      (append '(("\\.groovy\\'" . java-mode))))
+;;(setq auto-mode-alist
+;;      (append '(("\\.groovy\\'" . java-mode))))
 #+end_src
 
 * Java development config copied from [[https://github.com/dakrone/eos][Dakrone]]
