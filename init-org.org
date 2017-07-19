@@ -2234,7 +2234,7 @@ little wonky looking.
 :END:
 
 #+BEGIN_SRC emacs-lisp
-(defun eos/org-inline-css-hook (exporter)
+(defun deos/org-inline-css-hook (exporter)
   "Insert custom inline css to automatically set the
    background of code to whatever theme I'm using's background"
   (when (eq exporter 'html)
@@ -2254,7 +2254,7 @@ little wonky looking.
 Uncomment to automatically set background color to theme background
 
 #+BEGIN_SRC emacs-lisp
-;; (add-hook 'org-export-before-processing-hook #'eos/org-inline-css-hook)
+;; (add-hook 'org-export-before-processing-hook #'deos/org-inline-css-hook)
 #+END_SRC
 
 ** Automatically adding CUSTOM_ID to headlines in a file
@@ -2267,7 +2267,7 @@ Uncomment to automatically set background color to theme background
   :init
   (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
 
-  (defun eos/org-custom-id-get (&optional pom create prefix)
+  (defun deos/org-custom-id-get (&optional pom create prefix)
     "Get the CUSTOM_ID property of the entry at point-or-marker POM.
    If POM is nil, refer to the entry at point. If the entry does
    not have an CUSTOM_ID, the function returns nil. However, when
@@ -2286,7 +2286,7 @@ Uncomment to automatically set background color to theme background
           (org-id-add-location id (buffer-file-name (buffer-base-buffer)))
           id)))))
 
-  (defun eos/org-add-ids-to-headlines-in-file ()
+  (defun deos/org-add-ids-to-headlines-in-file ()
     "Add CUSTOM_ID properties to all headlines in the current
    file which do not already have one. Only adds ids if the
    `auto-id' option is set to `t' in the file somewhere. ie,
@@ -2296,7 +2296,7 @@ Uncomment to automatically set background color to theme background
       (widen)
       (goto-char (point-min))
       (when (re-search-forward "^#\\+OPTIONS:.*auto-id:t" (point-max) t)
-        (org-map-entries (lambda () (eos/org-custom-id-get (point) 'create))))))
+        (org-map-entries (lambda () (deos/org-custom-id-get (point) 'create))))))
 
   ;; automatically add ids to saved org-mode headlines
   (add-hook 'org-mode-hook
@@ -2305,7 +2305,7 @@ Uncomment to automatically set background color to theme background
                         (lambda ()
                           (when (and (eq major-mode 'org-mode)
                                      (eq buffer-read-only nil))
-                            (eos/org-add-ids-to-headlines-in-file)))))))
+                            (deos/org-add-ids-to-headlines-in-file)))))))
 #+END_SRC
 
 ** Tuning the way Agenda looks

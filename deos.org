@@ -13,9 +13,24 @@ way to organize my config and also provide some context around why I
 did things the way I did
 
 I am going to attempt to arrange my code in modules and provide a
-makefile to make installing convienent
+makefile to make installing convenient
 
-** Intialization and Installation
+* How to use these files
+This whole thing hinges on cloning this repository and running ==make== and ==make install== in the directory you clone the
+repository in. Here's the kicker though.  The directory has to be named *deos*. I quick way to
+customize this is to find all references to *deos* and rename them.
+
+Once you have installed the Emacs configuration system, you don't have to ever run ==make install==
+again. *EVER!* Seriously! Don't do it because it will make symlinks of symlinks and cats and dogs
+will marry each other.
+
+If you modify an org config file all you have to do is run make to re-tangle the file and restart
+Emacs.
+
+If you want to add an additional module, you'll also need to add it to the Makefile and load it in
+the [[./deos.org][deos.org]]
+
+* Intialization and Installation
 :PROPERTIES:
 :CUSTOM_ID: Initial-prep
 :END:
@@ -54,7 +69,17 @@ to the bin folder
     cd ~/deos
 #+END_SRC
 
-** Emacs Initialization
+
+* The DEOS Module Set
+There are a bunch of individual modules that make up my config. Ideally, they should all be able to
+be loaded individually, though I haven't tested this, because I want my whole config.
+
+- [[./init-core.org][Core DEOS]] - the base config for Emacs
+- [[./init-theme.org][Theme and Appearance]] - Change the look and feel
+- [[./init-completion.org][Completion]] - The completion engine used
+- [[./init-develop.org][Development]] - Various settings for programming
+
+* Emacs Initialization
 :PROPERTIES:
 :CUSTOM_ID: emacs-initialization
 :END:
@@ -157,6 +182,7 @@ This is where the magic starts
     (try-load 'init-utils)
     (try-load 'init-theme)
     (try-load 'init-org)
+    (try-load 'init-gtd)
     (try-load 'init-notifications)
     (try-load 'init-navigation)
     (try-load 'init-rss)

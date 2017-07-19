@@ -8,6 +8,7 @@ init-theme.el \
 init-editing.el \
 init-writing.el \
 init-org.el \
+init-gtd.el \
 init-dired.el \
 init-ivy.el \
 init-navigation.el \
