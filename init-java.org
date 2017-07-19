@@ -11,6 +11,8 @@
 #+begin_src emacs-lisp
 (use-package groovy-mode
   :ensure t)
+(setq auto-mode-alist
+      (append '(("\\.groovy\\'" . java-mode))))
 #+end_src
 
 * Java development config copied from [[https://github.com/dakrone/eos][Dakrone]]
@@ -287,4 +289,28 @@ active development, so I'm trying it out.
     (add-hook 'java-mode-hook #'meghanada-mode)
     (add-hook 'java-mode-hook 'flycheck-mode)
     ))
+#+END_SRC
+* Maven
+
+It was hard for me to run individual tests in maven, so I found a package to do it for me
+
+ toggle back and forth between a test and it's class (bound to `\C-c ,t`)
+
+ verify the test class associated with the current buffer (bound to `\C-c ,v`)
+
+ verify the test defined in the current buffer if it is a test file (bound
+   to `\C-c ,v`)
+
+ verify the test method defined at the point of the current buffer (bound
+   to `\C-c ,s`)
+
+ re-run the last verification process (bound to `\C-c ,r`)
+
+ run tests for entire project (bound to `\C-c ,a`)
+
+
+#+BEGIN_SRC emacs-lisp
+(use-package maven-test-mode
+  :ensure t
+)
 #+END_SRC
