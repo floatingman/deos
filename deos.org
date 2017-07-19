@@ -191,6 +191,7 @@ This is where the magic starts
     (try-load 'init-writing)
     (try-load 'init-ibuffer)
     (try-load 'init-completion)
+    (try-load 'init-web)
     (try-load 'init-develop)
     (try-load 'init-java)
     (try-load 'init-editing)
