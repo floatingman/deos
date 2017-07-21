@@ -17,8 +17,8 @@
 
 (setq deos/today-text
   "#+TITLE: Daytrack - %Y-%m-%d
-,#+AUTHOR: Lee Hinman
-,#+EMAIL: lee@writequit.org
+,#+AUTHOR: Daniel Newman
+,#+EMAIL: dwnewman78@gmail.com
 ,#+LANGUAGE: en
 ,#+PROPERTY: header-args:emacs-lisp :tangle yes
 ,#+HTML_HEAD: <link rel=\"stylesheet\" href=\"https://dakrone.github.io/org2.css\" type=\"text/css\" />
