@@ -184,6 +184,7 @@ This is where the magic starts
     (try-load 'init-org)
     (try-load 'init-gtd)
     (try-load 'init-notifications)
+    (try-load 'init-twitter)
     (try-load 'init-navigation)
     (try-load 'init-rss)
     (try-load 'init-irc)

@@ -1,0 +1,46 @@
+#+TITLE: Twitter Module
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+* Introduction
+#+BEGIN_SRC emacs-lisp
+(provide 'init-twitter)
+#+END_SRC
+
+* Twitter with twittering-mode
+#+BEGIN_SRC emacs-lisp
+(use-package twittering-mode
+  :ensure t
+  :config
+  (setq twittering-icon-mode t
+        twittering-use-master-password t
+        twittering-username "floatingman"
+        twittering-timer-interval 600
+        ;; Start up with home and "emacs" search
+        twittering-initial-timeline-spec-string
+        '("(:home+@)"
+          "(:search/emacs/)"
+          "(:search/girls-who-code/)"))
+  ;; Dont kill the twittering buffer, just bury it
+  (define-key twittering-mode-map (kbd "q") 'bury-buffer))
+#+END_SRC
+
+And then a nice helper for starting that will be called from the main DEOS hydra
+#+BEGIN_SRC emacs-lisp
+(defun deos/turn-on-twittering-notifications ()
+  (setq sauron-prio-twittering-mention 4))
+
+(defun deos/start-or-jump-to-twitter ()
+  "If twittering-mode is already active, jump to it, otherwise start it."
+  (interactive)
+  (if (get-buffer "(:home+@)")
+      (switch-to-buffer "(:home+@)")
+    ;; disable twitter notifications for ~10 seconds
+    (setq sauron-prio-twittering-mention 2)
+    (twittering-mode)
+    (run-at-time "10 sec" nil #'deos/turn-on-twittering-notifications)))
+#+END_SRC
