@@ -2675,5 +2675,111 @@ I use deft to take quick notes and search through those notes
         deft-recursive t
         deft-use-filter-string-for-filename t
         deft-text-mode 'org-mode))
+#+END_SRC
+* More Configuration from Brent
 
+** 18.7.6 Searching and showing results
+Org-mode's searching capabilities are really effective at finding data in your org files. C-c / /
+does a regular expression search on the current file and shows matching results in a collapsed view
+of the org-file.
+
+
+I have org-mode show the hierarchy of tasks above the matched entries and also the immediately
+following sibling task (but not all siblings) with the following settings:
+#+BEGIN_SRC emacs-lisp
+(setq org-show-following-heading t)
+(setq org-show-hierarchy-above t)
+(setq org-show-siblings (quote ((default))))
+#+END_SRC
+This keeps the results of the search relatively compact and mitigates accidental errors by cutting
+too much data from your org file with C-k. Cutting folded data (including the …) can be really
+dangerous since it cuts text (including following subtrees) which you can't see. For this reason I
+always show the following headline when displaying search results.
+
+
+** 18.7.7 Editing and Special key handling
+Org-mode allows special handling of the C-a, C-e, and C-k keys while editing headlines. I also use
+the setting that pastes (yanks) subtrees and adjusts the levels to match the task I am pasting to.
+See the docstring (C-h v org-yank-adjust-subtrees) for more details on each variable and what it
+does.
+
+I have org-special-ctrl-a/e set to enable easy access to the beginning and end of headlines. I use
+M-m or C-a C-a to get to the beginning of the line so the speed commands work and C-a to give easy
+access to the beginning of the heading text when I need that.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-special-ctrl-a/e t)
+(setq org-special-ctrl-k t)
+(setq org-yank-adjusted-subtrees t)
+#+END_SRC
+** Speed Commands
+There's an exciting feature called org-speed-commands in the org-mode.
+
+Speed commands allow access to frequently used commands when on the beginning of a headline -
+similar to one-key agenda commands. Speed commands are user configurable and org-mode provides a
+good set of default commands.
+
+
+I have the following speed commands set up in addition to the defaults. I don't use priorities so I
+override the default settings for the 1, 2, and 3 keys. I also disable cycling with 'c' and add 'q'
+as a quick way to get back to the agenda and update the current view.
+#+BEGIN_SRC emacs-lisp
+(setq org-use-speed-commands t)
+(setq org-speed-commands-user (quote (("0" . ignore)
+                                      ("1" . ignore)
+                                      ("2" . ignore)
+                                      ("3" . ignore)
+                                      ("4" . ignore)
+                                      ("5" . ignore)
+                                      ("6" . ignore)
+                                      ("7" . ignore)
+                                      ("8" . ignore)
+                                      ("9" . ignore)
+
+                                      ("a" . ignore)
+                                      ("d" . ignore)
+                                      ("h" . bh/hide-other)
+                                      ("i" progn
+                                       (forward-char 1)
+                                       (call-interactively 'org-insert-heading-respect-content))
+                                      ("k" . org-kill-note-or-show-branches)
+                                      ("l" . ignore)
+                                      ("m" . ignore)
+                                      ("q" . bh/show-org-agenda)
+                                      ("r" . ignore)
+                                      ("s" . org-save-all-org-buffers)
+                                      ("w" . org-refile)
+                                      ("x" . ignore)
+                                      ("y" . ignore)
+                                      ("z" . org-add-note)
+
+                                      ("A" . ignore)
+                                      ("B" . ignore)
+                                      ("E" . ignore)
+                                      ("F" . bh/restrict-to-file-or-follow)
+                                      ("G" . ignore)
+                                      ("H" . ignore)
+                                      ("J" . org-clock-goto)
+                                      ("K" . ignore)
+                                      ("L" . ignore)
+                                      ("M" . ignore)
+                                      ("N" . bh/narrow-to-org-subtree)
+                                      ("P" . bh/narrow-to-org-project)
+                                      ("Q" . ignore)
+                                      ("R" . ignore)
+                                      ("S" . ignore)
+                                      ("T" . bh/org-todo)
+                                      ("U" . bh/narrow-up-one-org-level)
+                                      ("V" . ignore)
+                                      ("W" . bh/widen)
+                                      ("X" . ignore)
+                                      ("Y" . ignore)
+                                      ("Z" . ignore))))
+
+(defun bh/show-org-agenda ()
+  (interactive)
+  (if org-agenda-sticky
+      (switch-to-buffer "*Org Agenda( )*")
+    (switch-to-buffer "*Org Agenda*"))
+  (delete-other-windows))
 #+END_SRC
