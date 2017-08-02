@@ -309,13 +309,19 @@ These are some settings for version control stuff.
 Start a server if not running, but a only for gui-only:
 
 #+BEGIN_SRC emacs-lisp
+(set-default 'server-socket-dir "~/.emacs.d/server")
+(if (functionp 'window-system)
+    (when (and (window-system)
+           (>= emacs-major-version 24))
+(server-start)))
+
 ;; Lame, server has bad autoloads :(
-(require 'server nil t)
-(use-package server
-  :if window-system
-  :init
-  (when (not (server-running-p server-name))
-    (server-start)))
+;; (require 'server nil t)
+;; (use-package server
+;;   :if window-system
+;;   :init
+;;   (when (not (server-running-p server-name))
+;;     (server-start)))
 #+END_SRC
 
 Prettify all the symbols, if available (an Emacs 24.4 feature):
