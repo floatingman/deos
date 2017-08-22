@@ -160,7 +160,7 @@ Fonts I may or may not use (in no particular order):
 
 #+BEGIN_SRC emacs-lisp
 ;; The original font height (so it can be restored too at a later time)
-(setq deos/original-height 105)
+(setq deos/original-height 180)
 
 (defun deos/setup-fonts ()
 (when *is-gui*
