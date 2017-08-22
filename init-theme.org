@@ -160,16 +160,16 @@ Fonts I may or may not use (in no particular order):
 
 #+BEGIN_SRC emacs-lisp
 ;; The original font height (so it can be restored too at a later time)
-(setq deos/original-height 90)
+(setq deos/original-height 105)
 
 (defun deos/setup-fonts ()
 (when *is-gui*
 ;; default font and variable-pitch fonts
 (set-face-attribute 'default nil
-                    :family "Hack"
+                    :family "Iosevka"
                     :height deos/original-height)
     (dolist (face '(mode-line mode-line-inactive minibuffer-prompt))
-      (set-face-attribute face nil :family "Hack"
+      (set-face-attribute face nil :family "Iosevka"
                           :height deos/original-height))
     (set-face-attribute 'variable-pitch nil
                         :family "DejaVu Sans" :height deos/original-height)
@@ -221,8 +221,12 @@ when you jack out of an external monitor."
 (defun deos/monitor-reset ()
   "Go back to the default font size and `line-spacing'"
   (interactive)
-  (set-face-attribute 'default nil :height deos/original-height)
-  (set-face-attribute 'variable-pitch nil :height deos/original-height)
+  (dolist (face '(default
+                   mode-line
+                   mode-line-inactive
+                   minibuffer-prompt
+                   variable-pitch))
+    (set-face-attribute face nil :height deos/original-height))
   (text-scale-adjust 0)
   (when (fboundp 'minimap-mode)
     (condition-case err

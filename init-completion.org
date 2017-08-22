@@ -91,7 +91,12 @@ Dabbrev is built in to Emacs, being something that is grate at greedy completion
              ("C-p" . company-select-previous)
              ("C-d" . company-show-doc-buffer)
              ("C-l" . company-show-location)
-             ("<tab>" . company-complete)))
+             ("<tab>" . company-complete))
+             (defun sanityinc/local-push-company-backend (backend)
+               "Add BACKEND to a buffer-local version of `company-backends'."
+               (set (make-local-variable 'company-backends)
+                    (append (list backend) company-backends)))
+  )
 #+END_SRC
 
 A few things to make Company work with dabbrev
