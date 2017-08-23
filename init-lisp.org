@@ -85,6 +85,13 @@ couldn't figure things out (ex: syntax errors)."
 
 (bind-key "C-x C-e" 'sanityinc/eval-last-sexp-or-region emacs-lisp-mode-map)
 
+(use-package page-break-lines
+  :ensure t
+  :commands (turn-on-page-break-lines-mode)
+  :diminish page-break-lines-mode
+  :init
+  (add-hook 'emacs-lisp-mode-hook #'turn-on-page-break-lines-mode))
+
 (provide 'init-lisp)
 
 #+end_src
