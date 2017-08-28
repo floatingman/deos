@@ -95,7 +95,7 @@ Here is a list of the bindings I'm trying out
         ;; don't display the header line
         helm-display-header-line nil
         ;; be semi-verbose for helm tramp messages
-        helm-tramp-verbose 1
+        helm-tramp-verbose 0
         ;; fuzzy matching
         helm-recentf-fuzzy-match t
         helm-locate-fuzzy-match nil ;; locate fuzzy is worthless
@@ -107,6 +107,7 @@ Here is a list of the bindings I'm trying out
         helm-apropos-fuzzy-match nil
         helm-lisp-fuzzy-completion nil
         helm-completion-in-region-fuzzy-match nil
+        ;; autoresize to 25 rows
         helm-autoresize-min-height 25
         helm-autoresize-max-height 25
         ;; Here are the things helm-mini shows, I add `helm-source-bookmarks'
@@ -211,7 +212,7 @@ Here is a list of the bindings I'm trying out
           ("mp4"  . "mpv")))
 
   ;; List of times to show in helm-world-time
-  (setq display-time-world-list '(("PST8PDT" "Los Altos")
+  (setq display-time-world-list '(("PST8PDT" "Mountain View")
                                   ("America/Denver" "Denver")
                                   ("EST5EDT" "Boston")
                                   ("UTC" "UTC")
