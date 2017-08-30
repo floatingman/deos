@@ -27,11 +27,11 @@
 ,#+OPTIONS: skip:nil d:(HIDE) tags:not-in-toc
 ,#+STARTUP: fold nodlcheck lognotestate showall
 
-,* 3 Things I'm Grateful for
+,* Affirmation
+
+,* 3 Things I'm Grateful for today
 
 ,* 3 Things that would be amazing to complete today
-
-,* Affirmation
 
 ,* Other Things
 
