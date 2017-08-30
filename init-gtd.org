@@ -27,7 +27,13 @@
 ,#+OPTIONS: skip:nil d:(HIDE) tags:not-in-toc
 ,#+STARTUP: fold nodlcheck lognotestate showall
 
-,* Things
+,* 3 Things I'm Grateful for
+
+,* 3 Things that would be amazing to complete today
+
+,* Affirmation
+
+,* Other Things
 
 ,* Notes")
 
