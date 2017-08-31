@@ -13,7 +13,7 @@
 * Task tracking, daily notes, and etc
 
 #+BEGIN_SRC emacs-lisp
-(defvar deos/gtd-location "~/org/track")
+(defvar deos/gtd-location "~/personal/org/track")
 
 (setq deos/today-text
   "#+TITLE: Daytrack - %Y-%m-%d
