@@ -29,9 +29,9 @@
 
 ,* Affirmation
 
-,* 3 Things I'm Grateful for today
-
 ,* 3 Things that would be amazing to complete today
+
+,* 3 Things I'm Grateful for today
 
 ,* Other Things
 
