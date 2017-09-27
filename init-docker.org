@@ -1,0 +1,35 @@
+#+TITLE: Docker
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+* Introduction
+Hopefully I'll be able to do all things docker within Emacs
+
+* Docker
+Trying out this docker package for managing docker containers  https://github.com/Silex/docker.el
+ #+BEGIN_SRC emacs-lisp
+(use-package docker
+  :ensure t)
+#+END_SRC
+
+* Editing Docker Files
+#+BEGIN_SRC emacs-lisp
+(use-package docker-compose-mode
+  :ensure t)
+(use-package dockerfile-mode
+  :ensure t)
+#+END_SRC
+
+* Connecting to docker and vagrant with tramp
+#+BEGIN_SRC emacs-lisp
+(use-package helm-tramp
+  :ensure t)
+#+END_SRC
+* Making package importable
+#+BEGIN_SRC emacs-lisp
+(provide 'init-docker)
+#+END_SRC

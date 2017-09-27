@@ -206,6 +206,7 @@ This is where the magic starts
     (try-load 'init-helm)
     ;;(try-load 'init-ivy)
     (try-load 'init-eshell)
+    (try-load 'init-docker)
 
     ;; Hooks
     (add-hook 'after-deos-hook

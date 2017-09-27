@@ -30,6 +30,7 @@ init-git.el \
 init-grep.el \
 init-ibuffer.el \
 init-eshell.el \
+init-docker.el \
 deos.el
 
 all: init $(el-modules)

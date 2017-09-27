@@ -134,7 +134,6 @@ Here is a list of the bindings I'm trying out
     (add-hook 'after-init-hook #'helm-mode)
     (add-hook 'after-init-hook #'helm-autoresize-mode)
     (add-hook 'after-init-hook #'helm-adaptive-mode)
-    (add-hook 'after-init-hook #'helm-push-mark-mode)
     (add-hook 'after-init-hook #'helm-popup-tip-mode))
   (use-package helm-sys
     :init (add-hook 'after-init-hook #'helm-top-poll-mode))
