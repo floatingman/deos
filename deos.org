@@ -160,6 +160,11 @@ This is where the magic starts
     (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
     ;;(el-get 'sync)
 
+    ;; Mitigate Bug#28350 (security) in Emacs 25.2 and earlier.
+    (eval-after-load "enriched"
+                     '(defun enriched-decode-display-prop (start end &optional param)
+                        (list start end)))
+
     (defvar after-deos-hook nil
       "Hooks to run after all of the DEOS has been loaded")
 

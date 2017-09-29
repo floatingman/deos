@@ -49,6 +49,7 @@ instance, I had to resort to just using the "open" command and setting Firefox a
           ("twitter.com" . browse-url-generic)
           ("\/\/a.co" . browse-url-generic)
           ("youtube.com" . browse-url-generic)
+          ("amazon.com" . browse-url-generic)
           ("." . eww-browse-url)))
   (setq shr-external-browser 'browse-url-generic)
   (if *is-a-mac*

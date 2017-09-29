@@ -303,15 +303,18 @@ for Documentation) to activate it.
   :ensure t
   :bind (("C-c D" . helm-dash))
   :init
-  (setq helm-dash-common-docsets '("ElasticSearch")
-        helm-dash-min-length 2)
+  (setq helm-dash-common-docsets '("ElasticSearch" "Java")
+        helm-dash-min-length 1)
   :config
   (defun deos/use-java-docset ()
     (setq-local helm-dash-docsets '("Java")))
   (defun deos/use-elisp-docset ()
     (setq-local helm-dash-docsets '("Emacs Lisp")))
+  (defun deos/use-haskel-docset ()
+    (setq-local helm-dash-docsets '("Haskell")))
   (add-hook 'java-mode-hook #'deos/use-java-docset)
-  (add-hook 'emacs-lisp-mode-hook #'deos/use-elisp-docset))
+  (add-hook 'emacs-lisp-mode-hook #'deos/use-elisp-docset)
+  (add-hook 'haskell-mode-hook #'deos/use-haskell-docset))
 #+end_src
 
 * Flycheck
