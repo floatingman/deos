@@ -70,7 +70,8 @@ Global bindings
                                    ,(file-truename "~/personal/org/gratitude.org")
                                    ,(file-truename "~/personal/org/notes.org")
                                    ,(file-truename "~/personal/org/bibliography.org")
-                                   ,(file-truename "~/personal/org/journal.org"))))
+                                   ,(file-truename "~/personal/org/journal.org")
+                                   ,(file-truename "~/personal/org/emacs.org"))))
 
 #+END_SRC
 
@@ -297,7 +298,9 @@ things:
          "* TODO Review %c\n%U\n" :immediate-finish t)
         ("b" "Book/Bibliography" entry
          (file+headline "~/personal/org/bibliography.org" "Refile")
-         "* %?%^{TITLE}p%^{AUTHOR}p%^{TYPE}p")))
+         "* %?%^{TITLE}p%^{AUTHOR}p%^{TYPE}p")
+        ("e" "Emacs Issues" entry (file+headline "~/personal/org/emacs.org" "Issues")
+         "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)))
   #+END_SRC
 
 Capture mode now handles automatically clocking in and out of a capture task. This all works out of
