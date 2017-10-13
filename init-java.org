@@ -10,7 +10,9 @@
 * Groovy
 #+begin_src emacs-lisp
 (use-package groovy-mode
-  :ensure t)
+  :ensure t
+  :config
+  (setq groovy-indent-offset 2))
 ;;(setq auto-mode-alist
 ;;      (append '(("\\.groovy\\'" . java-mode))))
 #+end_src
@@ -119,11 +121,14 @@ First decide on which ide to use meghanada or eclim
 ;; Used for deos/setup-java
 (use-package shut-up :ensure t)
 
+;; Install Google code style
+(use-package google-c-style
+  :ensure t)
+
 (defun deos/setup-java ()
   (interactive)
   (define-key java-mode-map (kbd "M-,") 'pop-tag-mark)
   (define-key java-mode-map (kbd "C-c M-i") 'java-imports-add-import-dwim)
-  (c-set-style "intellij" t)
   (subword-mode 1)
   (shut-up (toggle-truncate-lines 1))
   ;; Generic java stuff things
