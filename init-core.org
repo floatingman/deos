@@ -649,6 +649,17 @@ visualize it in ascii art if needed.
   (progn
     (define-key undo-tree-map (kbd "C-x u") 'undo-tree-visualize)
     (define-key undo-tree-map (kbd "C-/") 'undo-tree-undo)))
+(defhydra hydra-undo-tree (:color yello :hint nil)
+  "
+  _p_: undo _n_: redo _s_: save _l_: load  "
+  ("p"   undo-tree-undo)
+  ("n"   undo-tree-redo)
+  ("s"   undo-tree-save-history)
+  ("l"   undo-tree-load-history)
+  ("u"   undo-tree-visualize "visualize" :color blue)
+  ("q"   nil "quit" :color blue))
+
+(global-set-key (kbd "M-,") 'hydra-undo-tree/undo-tree-undo)
 #+END_SRC
 
 
