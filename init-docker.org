@@ -49,6 +49,13 @@ Trying out this docker package for managing docker containers  https://github.co
         (setq ad-return-value dockernames))
     ad-do-it))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package docker-tramp
+  :ensure t)
+(use-package eshell-bookmark
+  :ensure t)
+#+END_SRC
 * Making package importable
 #+BEGIN_SRC emacs-lisp
 (provide 'init-docker)

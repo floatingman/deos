@@ -68,11 +68,11 @@ couldn't figure things out (ex: syntax errors)."
           (insert (mapconcat 'cdr list "\n"))))))
 
 
-(use-package redshank
-  :defer t
-  :ensure t
-  :diminish "RS"
-  :init (add-hook 'emacs-lisp-mode-hook 'redshank-mode))
+;;(use-package redshank
+;;  :defer t
+;;  :ensure t
+;;  :diminish "RS"
+;;  :init (add-hook 'emacs-lisp-mode-hook 'redshank-mode))
 
 (bind-key "M-:" 'pp-eval-expression)
 

@@ -27,8 +27,9 @@ Setup Sauron
   (when (not (boundp 'dbus-compiled-version))
     ;; Remove dbus if it is not compiled
     (require 'sauron)
-    (setq sauron-modules (remove 'sauron-dbus sauron-modules)))
-
+    (setq sauron-modules (remove 'sauron-dbus sauron-modules))
+    (setq sauron-modules (remove 'sauron-mu4e sauron-modules)))
+  (setq sauron-modules (remove 'sauron-mu4e sauron-modules))
   (setq sauron-max-line-length 120
         sauron-watch-patterns '("dakrone" "thnetos" "okenezak")
         sauron-watch-nicks '("dakrone" "thnetos")
