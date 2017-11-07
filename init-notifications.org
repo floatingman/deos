@@ -29,6 +29,7 @@ Setup Sauron
     (require 'sauron)
     (setq sauron-modules (remove 'sauron-dbus sauron-modules))
     (setq sauron-modules (remove 'sauron-mu4e sauron-modules)))
+  (require 'sauron)
   (setq sauron-modules (remove 'sauron-mu4e sauron-modules))
   (setq sauron-max-line-length 120
         sauron-watch-patterns '("dakrone" "thnetos" "okenezak")
