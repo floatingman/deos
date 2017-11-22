@@ -145,8 +145,39 @@ completion, prompt and term settings:
   (use-package esh-opt
     :config
     (use-package em-cmpl)
-    (use-package em-prompt)
+    (use-package em-prompt
+      :init
+      (with-eval-after-load 'em-prompt
+        (defun eshell-next-prompt (n)
+          "Move to end of Nth next prompt in the buffer. See `eshell-prompt-regexp'."
+          (interactive "p")
+          (re-search-forward eshell-prompt-regexp nil t n)
+          (when eshell-highlight-prompt
+          (while (not (get-text-property (line-beginning-position) 'read-only))
+            (re-search-forward eshell-prompt-regexp nil t n)))
+          (eshell-skip-prompt))
+
+        (defun eshell-previous-prompt (n)
+          "Move to end of Nth previous prompt in the buffer. See `eshell-prompt-regexp'."
+          (interactive "p")
+          (backward-char)
+          (eshell-next-prompt (- n)))))
     (use-package em-term)
+
+    ;; Shared history.
+    (defvar eshell-history-global-ring nil
+      "The history ring shared across Eshell sessions.")
+
+    (defun eshell-hist-use-global-history ()
+      "Make Eshell history shared across different sessions."
+      (unless eshell-history-global-ring
+        (let (eshell-history-ring)
+          (when eshell-history-file-name
+            (eshell-read-history nil t))
+          (setq eshell-history-global-ring eshell-history-ring))
+        (unless eshell-history-ring (setq eshell-history-global-ring (make-ring eshell-history-size))))
+      (setq eshell-history-ring eshell-history-global-ring))
+    (add-hook 'eshell-mode-hook 'eshell-hist-use-global-history)
 
     (setq eshell-cmpl-cycle-completions nil
           ;; auto truncate after 12k lines
@@ -247,6 +278,16 @@ completion, prompt and term settings:
     (interactive)
     (magit-status default-directory)
     nil))
+
+  (use-package company-eshell-autosuggest
+    :ensure t
+    :after eshell
+    :init
+    (defun deos/setup-compnay-eshell-autosuggest ()
+      (with-eval-after-load 'company
+        (setq-local company-backends '(company-eshell-autosuggest))
+        (setq-local company-frontends '(company-preview-frontend))))
+    (add-hook 'eshell-mode-hook 'deos/setup-company-eshell-autosuggest))
 #+END_SRC
 
 I use a dedicated buffer for connection to my desktop, with a binding of =C-x
@@ -303,8 +344,11 @@ d=, if the buffer doesn't exist it is created.
     (eshell))
   (let ((eshell-buffer-name "*eshell*<2>")
         (default-directory "~/")) (eshell))
+  (let ((eshell-buffer-name "*eshell*<3>")
+        (default-directory "~/gitrepo"))
+    (eshell))
   (let ((eshell-buffer-name "*eshell-delta*")
-        (default-directory "~/.emacs.d"))
+        (default-directory "~/deos"))
     (eshell))
   (let ((eshell-buffer-name "*eshell downloads*")
         (default-directory "~/Downloads"))
@@ -406,8 +450,8 @@ And some nice glue for quickly closing eshell windows
 #+BEGIN_SRC emacs-lisp
 (defun eshell/x ()
   "Closes the EShell session and gets rid of the EShell window."
-  (kill-buffer)
-  (delete-window))
+   (delete-window)
+   (eshell/exit))
 #+END_SRC
 
 ** Open an eshell window there

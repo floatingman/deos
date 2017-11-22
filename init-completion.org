@@ -7,6 +7,31 @@
 (provide 'init-completion)
 #+END_SRC
 
+* Filename completion in scratch
+#+BEGIN_SRC emacs-lisp
+(setq completion-at-point-functions '(elisp-completion-at-point comint-dynamic-complete-filename t))
+#+END_SRC
+
+* EACL
+Trying out EACL for completing the uncompletable
+#+BEGIN_SRC emacs-lisp
+(use-package eacl
+  :ensure t)
+(eval-after-load 'grep
+  '(progn
+     (dolist (v '("node_modules"
+                  "bower_components"
+                  ".sass_cache"
+                  ".cache"
+                  ".npm"))
+       (add-to-list 'grep-find-ignored-directories v))
+     (dolist (v '("*.min.js"
+                  "*.bundle.js"
+                  "*.min.css"
+                  "*.json"
+                  "*.log"))
+       (add-to-list 'grep-find-ignored-files v))))
+#+END_SRC
 * Dabbrev
 
 Dabbrev is built in to Emacs, being something that is grate at greedy completion
