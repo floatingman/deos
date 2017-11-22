@@ -283,7 +283,7 @@ completion, prompt and term settings:
     :ensure t
     :after eshell
     :init
-    (defun deos/setup-compnay-eshell-autosuggest ()
+    (defun deos/setup-company-eshell-autosuggest ()
       (with-eval-after-load 'company
         (setq-local company-backends '(company-eshell-autosuggest))
         (setq-local company-frontends '(company-preview-frontend))))
