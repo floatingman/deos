@@ -23,6 +23,21 @@
     (add-hook 'python-mode-hook (lambda ()
                                   (sanityinc/local-push-company-backend 'company-anaconda)))))
 
+(use-package python
+  :defer t
+  :config
+  (define-key python-mode-map (kbd "<backtab>") 'python-back-indent))
+
+(use-package virtualenvwrapper
+  :ensure t
+  :defer t
+  :init
+  (progn
+    (venv-initialize-interactive-shells)
+    (venv-initialize-eshell)
+    (setq venv-location (or (getenv "WORKON_HOME")
+                            "~/.venvs"))))
+
 (provide 'init-python)
 
 #+end_src

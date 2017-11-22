@@ -189,25 +189,25 @@ Indention (just do it right)
 Highlight a bunch of stuff
 
 #+begin_src emacs-lisp
-        (use-package highlight-numbers
-          :ensure t
-          :init
-          (add-hook 'prog-mode-hook #'highlight-numbers-mode))
+(use-package highlight-numbers
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook #'highlight-numbers-mode))
 
-      (use-package highlight-quoted
-        :ensure t
-        :init
-        (add-hook 'prog-mode-hook #'highlight-quoted-mode))
+(use-package highlight-quoted
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook #'highlight-quoted-mode))
 
-    (use-package highlight-defined
-      :ensure t
-      :init
-      (add-hook 'emacs-lisp-hook #'highlight-defined-mode))
+(use-package highlight-defined
+  :ensure t
+  :init
+  (add-hook 'emacs-lisp-hook #'highlight-defined-mode))
 
-  (use-package highlight-operators
-    :ensure t
-    :init
-    (add-hook 'c-mode-common-hook #'highlight-operators-mode))
+(use-package highlight-operators
+  :ensure t
+  :init
+  (add-hook 'c-mode-common-hook #'highlight-operators-mode))
 
 (use-package highlight-escape-sequences
   :ensure t
@@ -308,13 +308,17 @@ for Documentation) to activate it.
   :config
   (defun deos/use-java-docset ()
     (setq-local helm-dash-docsets '("Java")))
+  (defun deos/use-groovy-docset ()
+    (setq-local helm-dash-docsets '("Groovy")))
   (defun deos/use-elisp-docset ()
     (setq-local helm-dash-docsets '("Emacs Lisp")))
   (defun deos/use-haskel-docset ()
     (setq-local helm-dash-docsets '("Haskell")))
   (add-hook 'java-mode-hook #'deos/use-java-docset)
   (add-hook 'emacs-lisp-mode-hook #'deos/use-elisp-docset)
-  (add-hook 'haskell-mode-hook #'deos/use-haskell-docset))
+  (add-hook 'haskell-mode-hook #'deos/use-haskell-docset)
+  (add-hook 'groovy-mode-hook #'deos/use-groovy-docset))
+
 #+end_src
 
 * Flycheck
