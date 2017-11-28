@@ -1,3 +1,4 @@
+
 # Directory where this Makefile exists (the dotfiles directory)
 EMACS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -31,6 +32,7 @@ init-grep.el \
 init-ibuffer.el \
 init-eshell.el \
 init-docker.el \
+init-evil.el \
 deos.el
 
 all: init $(el-modules)

@@ -1,0 +1,27 @@
+#+TITLE: Evil-mode
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+* Introduction
+It is inevitable. I'm starting to adopt evil-mode, a vi like keybinding mode for editing in Emacs.
+#+BEGIN_SRC emacs-lisp
+(provide 'init-evil)
+#+END_SRC
+
+* Let the evil begin
+#+BEGIN_SRC emacs-lisp
+(use-package evil
+  :ensure t
+  :config
+  (evil-mode 1))
+#+END_SRC
+
+Install goto-chg which is used by evil-mode to go back to the last change in a buffer
+#+BEGIN_SRC emacs-lisp
+(use-package goto-chg
+  :ensure t)
+#+END_SRC
