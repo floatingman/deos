@@ -17,7 +17,7 @@ It is inevitable. I'm starting to adopt evil-mode, a vi like keybinding mode for
 (use-package evil
   :ensure t
   :config
-  (evil-mode 1))
+  (evil-mode 0))
 #+END_SRC
 
 Install goto-chg which is used by evil-mode to go back to the last change in a buffer

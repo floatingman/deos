@@ -73,6 +73,19 @@ Random keybindings
 ;; If you want to be able to M-x without meta (phones, etc)
 (global-set-key (kbd "C-c C-x") 'execute-extended-command)
 #+END_SRC
+Some random highlighting helpers
+#+BEGIN_SRC emacs-lisp
+(use-package hl-anything
+  :ensure t
+  :diminish hl-highlight-mode
+  :commands hl-highlight-mode
+  :init
+  (global-set-key (kbd "<f7> <f7>") 'hl-highlight-thingatpt-local)
+  (global-set-key (kbd "<f7> u") 'hl-unhighlight-all-local)
+  (global-set-key (kbd "<f7> U") 'hl-unhighlight-all-global)
+  (global-set-key (kbd "<f7> n") 'hl-find-next-thing)
+  (global-set-key (kbd "<f7> p") 'hl-find-prev-thing))
+#+END_SRC
 
 * Isearch
 #+BEGIN_SRC emacs-lisp
@@ -121,6 +134,20 @@ This helps get trackpads back in the game
 (defun track-mouse (e))
 #+END_SRC
 
+* Dumb-jump
+#+BEGIN_SRC emacs-lisp
+(use-package dumb-jump
+  :ensure t
+  :init (dumb-jump-mode))
+#+END_SRC
+
+* Move-text
+#+BEGIN_SRC emacs-lisp
+(use-package move-text
+  :ensure t
+  :init (move-text-default-bindings))
+#+END_SRC
+
 * Navigating without control
 #+BEGIN_SRC emacs-lisp
 (use-package hydra :ensure t)
@@ -132,11 +159,15 @@ This helps get trackpads back in the game
   ("t" toggle-truncate-lines)
   ("a" beginning-of-line)
   ("l" forward-char)
+  ("<right>" forward-char)
   ("h" backward-char)
+  ("<left>" backward-char)
   ("n" next-line)
   ("j" next-line)
+  ("<down>" next-line)
   ("p" previous-line)
   ("k" previous-line)
+  ("<up>" previous-line)
   ("e" View-scroll-half-page-forward)
   ("u" View-scroll-half-page-backward)
   ("SPC" scroll-up-command)

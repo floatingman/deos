@@ -48,6 +48,10 @@ Global bindings
 #+BEGIN_SRC emacs-lisp
         (global-set-key (kbd "C-c l") 'org-store-link)
         (global-set-key (kbd "C-c a") 'org-agenda)
+        (when (fboundp 'org-iswitchb)
+          (global-set-key (kbd "C-c b") 'org-iswitchb))
+        (when (fboundp 'org-switchb)
+          (global-set-key (kbd "C-c b") 'org-switchb))
         (global-set-key (kbd "C-c b") 'org-iswitchb)
         (global-set-key (kbd "C-c c") 'org-capture)
 
@@ -2033,6 +2037,15 @@ to use the development (read: local) version of it when available.
 (use-package ob-clojure :ensure clojure-mode)
 (use-package ob-elasticsearch :ensure es-mode)
 
+(defadvice org-babel-execute-src-block (around load-language nil activate)
+  "Load language if needed"
+  (let ((language (org-element-property :language (org-element-at-point))))
+    (unless (cdr (assoc (intern language) org-babel-load-languages))
+      (add-to-list 'org-babel-load-languages (cons (intern language) t))
+      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
+    ad-do-it))
+
+
 ;; don't run stuff automatically on export
 (setq org-export-babel-evaluate nil
       ;; always enable noweb, results as code and exporting both
@@ -2051,16 +2064,9 @@ to use the development (read: local) version of it when available.
  '((emacs-lisp . t)
    (elasticsearch . t)
    (clojure . t)
-   (dot . t)
-   (sh . t)
-   (js . t)
-   (haskell . t)
+   (shell . t)
    (ruby . t)
-   (python . t)
-   (gnuplot . t)
-   (plantuml . t)
-   (ditaa . t)
-   (latex . t)))
+   (python . t)))
 
 ;; this is where Fedora installs it, YMMV
 (setq org-plantuml-jar-path "~/personal/bin/plantuml.jar")

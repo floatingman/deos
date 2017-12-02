@@ -10,8 +10,8 @@
 
 * Pick a default theme
 #+BEGIN_SRC emacs-lisp
-;;(defvar deos/background 'light)
-(defvar deos/background 'dark)
+(defvar deos/background 'light)
+;;(defvar deos/background 'dark)
 #+END_SRC
 
 * Set some good eye candy
@@ -60,6 +60,7 @@ balanced of color and pleasing to my eyes.
     (progn
       (use-package color-theme-sanityinc-tomorrow
         :ensure t
+        :disabled t
         :init
         (load-theme 'sanityinc-tomorrow-night t)
         ;; Just ever so slightly more bright foreground text, default is
@@ -71,7 +72,6 @@ balanced of color and pleasing to my eyes.
         (set-face-background 'whitespace-newline (face-attribute 'default :background)))
       (use-package tao-theme
         :ensure t
-        :disabled t
         :init
         (load-theme 'tao-yin t)
         (require 'git-gutter)
@@ -82,51 +82,34 @@ balanced of color and pleasing to my eyes.
         (set-face-attribute 'git-gutter-fr:modified nil :foreground "light blue")
         (set-face-attribute 'git-gutter:added nil :foreground "green")
         (set-face-attribute 'git-gutter-fr:added nil :foreground "green")
-        (require 'linum)
-        (set-face-attribute 'linum nil :foreground "#444444"))
-      (use-package doom-themes
+        (require 'semantic/decorate/mode)
+        (require 'semantic/decorate/include)
+        (set-face-attribute 'semantic-tag-boundary-face nil :overline "grey25")
+        (set-face-attribute 'semantic-decoration-on-unknown-includes nil :background "grey15")))
+
+      (use-package leuven-theme
         :ensure t
         :disabled t
         :init
-        (load-theme 'doom-one t)
-        (diminish 'doom-buffer-mode)
-        ;; Doom currently has a broken modeline
-        (set-face-attribute 'mode-line-buffer-id nil
-                            :foreground "white" :bold t))
-      (use-package zerodark-theme
+        (load-theme 'leuven t)
+        ;; Ever-so-slightly darker background
+        (set-face-background 'default "#F7F7F7"))
+      (use-package tao-theme
         :ensure t
         :disabled t
         :init
-        (load-theme 'zerodark t)
-        (zerodark-setup-modeline-format)))
-  (use-package leuven-theme
-    :ensure t
-    :disabled t
-    :init
-    (load-theme 'leuven t)
-    ;; Ever-so-slightly darker background
-    (set-face-background 'default "#F7F7F7"))
-  (use-package github-theme
-    :ensure t
-    :disabled t
-    :init
-    (load-theme 'github t))
-  (use-package tao-theme
-    :ensure t
-    :disabled t
-    :init
-    (load-theme 'tao-yang t)
-    (require 'git-gutter)
-    (require 'git-gutter-fringe)
-    (set-face-attribute 'git-gutter:deleted nil :foreground "red")
-    (set-face-attribute 'git-gutter-fr:deleted nil :foreground "red")
-    (set-face-attribute 'git-gutter:modified nil :foreground "light blue")
-    (set-face-attribute 'git-gutter-fr:modified nil :foreground "light blue")
-    (set-face-attribute 'git-gutter:added nil :foreground "green")
-    (set-face-attribute 'git-gutter-fr:added nil :foreground "green"))
-  (use-package dakrone-light-theme
-    :ensure t
-    :init (load-theme 'dakrone-light t)))
+        (load-theme 'tao-yang t)
+        (require 'git-gutter)
+        (require 'git-gutter-fringe)
+        (set-face-attribute 'git-gutter:deleted nil :foreground "red")
+        (set-face-attribute 'git-gutter-fr:deleted nil :foreground "red")
+        (set-face-attribute 'git-gutter:modified nil :foreground "light blue")
+        (set-face-attribute 'git-gutter-fr:modified nil :foreground "light blue")
+        (set-face-attribute 'git-gutter:added nil :foreground "green")
+        (set-face-attribute 'git-gutter-fr:added nil :foreground "green"))
+      (use-package dakrone-light-theme
+        :ensure t
+        :init (load-theme 'dakrone-light t)))
 #+END_SRC
 
 If using OSX, the colors and fonts look a bit wonky, so let's fix that
@@ -289,6 +272,7 @@ responsiveness, so I go back and forth with it.
 #+BEGIN_SRC emacs-lisp
 (use-package smart-mode-line
   :ensure t
+  :disabled t
   :init
   (if (eq deos/background 'dark)
       (setq sml/theme deos/background)
@@ -336,6 +320,7 @@ And then there's [[https://github.com/domtronn/spaceline-all-the-icons.el][Space
 (use-package spaceline-all-the-icons
   :after spaceline
   :ensure t
+  :disabled t
   :config
   (spaceline-all-the-icons-theme)
   (spaceline-all-the-icons--setup-anzu))
@@ -645,7 +630,6 @@ with the tomorrow-night theme.
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :ensure t
-  :disabled t
   :init
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   :config
@@ -706,9 +690,9 @@ java-mode applies the color-identifiers configuration.
       (deos/make-local-face 'font-lock-keyword-face :foreground nil :weight 'bold)
       (deos/make-local-face 'font-lock-builtin-face :foreground nil :weight 'bold)
       (color-identifiers-mode 1)))
-  ;;(add-hook 'java-mode-hook #'color-identifiers-mode)
-  ;;(add-hook 'emacs-lisp-mode-hook #'color-identifiers-mode)
-  ;;(global-color-identifiers-mode 1)
+  (add-hook 'java-mode-hook #'color-identifiers-mode)
+  (add-hook 'emacs-lisp-mode-hook #'color-identifiers-mode)
+  (global-color-identifiers-mode 1)
   )
 #+END_SRC
 

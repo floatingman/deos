@@ -212,7 +212,7 @@ This is where the magic starts
     ;;(try-load 'init-ivy)
     (try-load 'init-eshell)
     (try-load 'init-docker)
-    (try-load 'init-evil)
+    ;;(try-load 'init-evil)
     ;; Hooks
     (add-hook 'after-deos-hook
               (lambda ()
