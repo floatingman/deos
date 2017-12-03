@@ -2105,12 +2105,11 @@ to use the development (read: local) version of it when available.
 Allow asynchronously executing org-babel blocks. Sometimes I run long-running
 babel executions, and this allows Emacs not to hang while executing them
 #+BEGIN_SRC emacs-lisp
-(use-package ob-async
-  :init
-  (use-package org
-    :config
-    (add-to-list 'org-ctrl-c-ctrl-c-hook
-                 'ob-async-org-babel-execute-src-block)))
+(eval-after-load "org"
+  (use-package ob-async
+    :ensure t
+    :disabled t
+    :init (require 'ob-async)))
 #+END_SRC
 
 
