@@ -285,6 +285,7 @@ Turn on auto-fill mode in text buffers:
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 (use-package diminish
+  :ensure t
   :init (diminish 'auto-fill-function ""))
 #+END_SRC
 
