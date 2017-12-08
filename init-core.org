@@ -1379,3 +1379,14 @@ but they also have a bit of downsides...
 
   (add-hook 'so-long-hook #'deos/so-long-hook))
 #+END_SRC
+
+* Lastpass
+#+BEGIN_SRC emacs-lisp
+(use-package lastpass
+  :ensure t
+  :config
+  ;; Set lastpass user
+  (setq lastpass-user "dwnewman78@gmail.com")
+  ;; Enable lastpass custom auth-source
+  (lastpass-auth-source-enable))
+#+END_SRC
