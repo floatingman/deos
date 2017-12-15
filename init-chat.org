@@ -1,0 +1,30 @@
+#+TITLE: Chat
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+* Introduction
+Here are some utilities to facilitate text communications between carbon based lifeforms. Nanu-Nanu
+
+* Setup
+#+BEGIN_SRC emacs-lisp
+(provide 'init-chat)
+#+END_SRC
+
+* Jabber client
+This is a cool client that lets you communicate over jabber protocols, most popularly Google
+Hangouts
+#+BEGIN_SRC emacs-lisp
+(use-package jabber
+  :ensure t
+  :init
+  (setq jabber-history-enabled t)
+  :config
+  (add-to-list 'jabber-account-list '("dwnewman78@gmail.com"
+  (:network-server . "talk.google.com")
+  (:connection-type . ssl)))
+  (add-hook 'jabber-post-connect-hooks 'jabber-autoaway-start))
+#+END_SRC

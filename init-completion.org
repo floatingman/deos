@@ -8,13 +8,13 @@
 #+END_SRC
 
 * Filename completion in scratch
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq completion-at-point-functions '(elisp-completion-at-point comint-dynamic-complete-filename t))
 #+END_SRC
 
 * EACL
 Trying out EACL for completing the uncompletable
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package eacl
   :ensure t)
 (eval-after-load 'grep

@@ -33,6 +33,7 @@ init-ibuffer.el \
 init-eshell.el \
 init-docker.el \
 init-evil.el \
+init-chat.el \
 deos.el
 
 all: init $(el-modules)
