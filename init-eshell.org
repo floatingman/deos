@@ -279,7 +279,7 @@ completion, prompt and term settings:
     (magit-status default-directory)
     nil))
 
-  (use-package company-eshell-autosuggest
+  (use-package esh-autosuggest
     :ensure t
     :after eshell
     :init
