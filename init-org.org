@@ -2653,12 +2653,16 @@ Right now the default keybindings are annoying
 #+END_SRC
 
 ** Presentations with =org-reveal=
+https://github.com/yjwen/org-reveal
 :PROPERTIES:
 :CUSTOM_ID: h:3c34dc2c-3334-4f44-8cce-facef8541c5a
 :END:
 
 #+BEGIN_SRC emacs-lisp
-(use-package ox-reveal :ensure t)
+(use-package ox-reveal
+  :ensure t
+  :config
+  (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/"))
 #+END_SRC
 
 * Org Brain
