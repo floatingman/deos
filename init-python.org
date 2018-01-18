@@ -28,7 +28,7 @@
     (venv-initialize-eshell)
     (setq venv-location (or (getenv "WORKON_HOME")
                             "~/.virtualenvs"))))
-
+;; this requires some setup pip install jedi flake8 autopep8 yapf
 (use-package elpy
   :ensure t
   :defer t
