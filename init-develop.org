@@ -267,7 +267,7 @@ Indenting
 #+begin_src emacs-lisp
   (electric-indent-mode 1)
 
-  ;; Ignore electric indentation for python and yaml
+;;  Ignore electric indentation for python and yaml
   (defun electric-indent-ignore-mode (char)
     "Ignore electric indentation for python-mode"
     (if (or (equal major-mode 'python-mode)

@@ -29,6 +29,12 @@
     (setq venv-location (or (getenv "WORKON_HOME")
                             "~/.virtualenvs"))))
 
+(use-package elpy
+  :ensure t
+  :defer t
+  :init
+  (elpy-enable))
+
 (provide 'init-python)
 
 #+end_src
