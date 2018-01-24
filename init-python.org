@@ -33,7 +33,9 @@
   :ensure t
   :defer t
   :init
-  (elpy-enable))
+  (elpy-enable)
+  :config
+  (setq elpy-test-django-with-manage t))
 
 (provide 'init-python)
 
