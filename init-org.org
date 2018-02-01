@@ -1,3 +1,4 @@
+
 #+TITLE:   Org Module
 #+AUTHOR:  Daniel Newman
 #+EMAIL:   dwnewman78@gmail.com
@@ -75,7 +76,9 @@ Global bindings
                                    ,(file-truename "~/personal/org/notes.org")
                                    ,(file-truename "~/personal/org/bibliography.org")
                                    ,(file-truename "~/personal/org/journal.org")
-                                   ,(file-truename "~/personal/org/emacs.org"))))
+                                   ,(file-truename "~/personal/org/emacs.org")
+                                   ,(file-truename "~/personal/org/gcal.org")
+                                   ,(file-truename "~/personal/org/workgcal.org"))))
 
 #+END_SRC
 
@@ -2797,4 +2800,48 @@ as a quick way to get back to the agenda and update the current view.
       (switch-to-buffer "*Org Agenda( )*")
     (switch-to-buffer "*Org Agenda*"))
   (delete-other-windows))
+#+END_SRC
+
+This requires setting up access to the calendar api
+Follow these steps https://github.com/myuhe/org-gcal.el/blob/master/README.org
+#+BEGIN_SRC emacs-lisp
+(use-package org-gcal
+  :config
+  ;; (setq org-gcal-client-id "oauth client id"
+  ;;       org-gcal-client-secret "client secret"
+  ;;       org-gcal-file-alist '(("calendar email" . "gcal.org")
+  ;;                             ("another calendar email" . "workgcal.org")))
+  )
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package calfw-org
+  :ensure t)
+
+  (use-package calfw-ical
+    :ensure t)
+
+(use-package calfw
+  :ensure t
+  :config
+  (require 'calfw)
+  (require 'calfw-org)
+  (setq cfw:org-overwrite-default-keybinding t)
+  (require 'calfw-ical)
+
+  (defun mycalendar ()
+    (interactive)
+    (cfw:open-calendar-buffer
+     :contents-sources
+     (list
+      (cfw:org-create-source "Green")  ; orgmode source
+      ;;(cfw:ical-create-source "gcal" "some public ical address" "IndianRed")
+      ;;(cfw:ical-create-source "gcal" "another public ical address" "IndianRed")
+      )))
+  (setq cfw:org-overwrite-default-keybinding t))
+
+(use-package calfw-gcal
+	:ensure t
+	:config
+	(require 'calfw-gcal))
 #+END_SRC
