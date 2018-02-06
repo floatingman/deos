@@ -154,7 +154,7 @@ Keybindings from http://doc.norang.ca/org-mode.html
 
 The following diagram shows the possible state transitions for a task. Different than BH’s because I use a NEEDSREVIEW state to indicate a pull request is waiting for review
 
-#+begin_src plantuml :file images/normal_task_states.png :cache yes
+#+BEGIN_SRC plantuml :file images/normal_task_states.png :cache yes
 title Task States
 [*] -> TODO
 TODO -> NEXT
@@ -190,7 +190,7 @@ HOLD:h
 note right of CANCELLED: Note records\nwhy it was cancelled
 CANCELLED:c
 WAITING --> DONE
-#+end_src
+#+END_SRC
 
 ** Project Task States
 
@@ -2806,6 +2806,9 @@ This requires setting up access to the calendar api
 Follow these steps https://github.com/myuhe/org-gcal.el/blob/master/README.org
 #+BEGIN_SRC emacs-lisp
 (use-package org-gcal
+  :init
+  (use-package request-deferred
+    :ensure t)
   :config
   ;; (setq org-gcal-client-id "oauth client id"
   ;;       org-gcal-client-secret "client secret"
@@ -2815,14 +2818,13 @@ Follow these steps https://github.com/myuhe/org-gcal.el/blob/master/README.org
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(use-package calfw-org
-  :ensure t)
-
-  (use-package calfw-ical
-    :ensure t)
-
 (use-package calfw
   :ensure t
+  :init
+  (use-package calfw-org
+  :ensure t)
+  (use-package calfw-ical
+  :ensure t)
   :config
   (require 'calfw)
   (require 'calfw-org)
