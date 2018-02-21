@@ -152,8 +152,7 @@ Here is a list of the bindings I'm trying out
   (use-package smex :ensure t)
   (use-package helm-smex :ensure t)
   (use-package helm-bookmark
-    :bind ("C-x M-b" . helm-bookmarks)
-    :init (use-package bookmark+ :ensure t))
+    :bind ("C-x M-b" . helm-bookmarks))
   (use-package helm-projectile
     :ensure t
     :demand t ;; demand it be loaded!

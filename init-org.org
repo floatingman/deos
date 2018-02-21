@@ -2809,6 +2809,8 @@ Follow these steps https://github.com/myuhe/org-gcal.el/blob/master/README.org
   :init
   (use-package request-deferred
     :ensure t)
+  (use-package alert
+    :ensure t)
   :config
   ;; (setq org-gcal-client-id "oauth client id"
   ;;       org-gcal-client-secret "client secret"
