@@ -307,7 +307,11 @@ things:
          (file+headline "~/personal/org/bibliography.org" "Refile")
          "* %?%^{TITLE}p%^{AUTHOR}p%^{TYPE}p")
         ("e" "Emacs Issues" entry (file+headline "~/personal/org/emacs.org" "Issues")
-         "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)))
+         "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+        ("p" "Protocol" entry (file "")
+         "* TODO %?[[%:link][%:description]] %U\n%i\n" :prepend t)
+        ("L" "Protocol Link" entry (file "")
+         "* TODO %?[[%:link][%:description]] %U\n" :prepend t)))
   #+END_SRC
 
 Capture mode now handles automatically clocking in and out of a capture task. This all works out of
