@@ -147,9 +147,6 @@ run. I use it for the path on OSX and JAVA_HOME everywhere else.
       (setq exec-path-from-shell-variables '("JAVA_HOME"
                                              "PATH"
                                              "GRATER_PASSWORD"
-                                             "SAUCE_ACCESS_KEY"
-                                             "SAUCE_USERNAME"
-                                             "SAUCE_USER_NAME"
                                              "NVM_PATH"
                                              "WORKON_HOME"
                                              "RUST_SRC_PATH"
@@ -367,7 +364,6 @@ Emacs, so it's nice to have the option if desired..
 Desktop+ will automatically save the desktop when Emacs exits
 
 #+BEGIN_src emacs-lisp
-;; Disabled for now
 ;; (desktop-save-mode 1)
 ;; load all values eagerly
 (setq desktop-restore-eager 10)
@@ -378,7 +374,6 @@ Desktop+ will automatically save the desktop when Emacs exits
 
 (use-package desktop+
   :ensure t
-  :disabled t
   :init
   (defun deos/load-default-desktop ()
     "Load the default EOS desktop, assuming one has been saved
@@ -413,8 +408,8 @@ on Emacs startup.
         (delete-region (point-min) (point-max))
         (insert-file-contents "~/.emacs.d/persistent-scratch"))))
 
-;; (add-hook 'after-init-hook 'load-persistent-scratch)
-;; (add-hook 'kill-emacs-hook 'save-persistent-scratch)
+(add-hook 'after-init-hook 'load-persistent-scratch)
+(add-hook 'kill-emacs-hook 'save-persistent-scratch)
 #+END_SRC
 
 I restart emacs a lot, and it is nice to have the history of things like =M-x=

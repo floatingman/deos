@@ -32,8 +32,8 @@ Setup Sauron
   (require 'sauron)
   (setq sauron-modules (remove 'sauron-mu4e sauron-modules))
   (setq sauron-max-line-length 120
-        sauron-watch-patterns '("dakrone" "thnetos" "okenezak")
-        sauron-watch-nicks '("dakrone" "thnetos")
+        sauron-watch-patterns '("floatingman" "zygocat" "dwnewman78")
+        sauron-watch-nicks '("floatingman" "zygocat" "dwnewman78")
         sauron-nick-insensitivity 20
         sauron-prio-twittering-new-tweets 2
         sauron-frame-geometry "120x36+0+0")
