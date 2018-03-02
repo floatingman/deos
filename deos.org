@@ -54,6 +54,7 @@ to the bin folder
   # Emacs configuration folders
   mkdir -p ~/.emacs.d
   mkdir -p ~/.emacs.d/eshell
+  mkdir -p ~/.emacs.d/desktops/default
 #+END_SRC
 
 #+BEGIN_SRC sh :tangle install.sh :eval no
@@ -114,7 +115,7 @@ This is where the magic starts
     (add-to-list 'package-archives
                  '("melpa" . "https://melpa.org/packages/") t)
 
-    (setq custom-file "~/.emacs.d/custom.el")
+    (setq custom-file "~/personal/custom.el")
     (when (file-exists-p custom-file)
       (load custom-file))
 
