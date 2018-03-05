@@ -1,0 +1,34 @@
+#+TITLE: Helper Methods
+#+AUTHOR: Daniel Newman
+#+EMAIL: dwnewman78@gmail.com
+#+SETUPFILE: ~/deos/setupfiles/emacs.setup
+
+| *Author* | {{{author}}} ({{{email}}})    |
+| *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+
+* Introduction
+#+BEGIN_SRC emacs-lisp
+(provide 'init-helpers)
+#+END_SRC
+Various helper methods used by other configurations
+
+#+BEGIN_SRC emacs-lisp
+(defun neotree-find-project-root()
+  (interactive)
+  (if (neo-global--window-exists-p)
+      (neotree-hide)
+    (let ((origin-buffer-file-name (buffer-file-name)))
+      (neotree-find (projectile-project-root))
+      (neotree-find origin-buffer-file-name))))
+
+(defun kill-other-buffers (&optional arg)
+  "Kill all other buffers.
+  If the universal prefix argument is used then will the windows too."
+  (interactive "P")
+  (when (yes-or-no-p (format "Killing all buffers except \"%s\"? "
+                             (buffer-name)))
+    (mapc 'kill-buffer (delq (current-buffer) (buffer-list)))
+    (when (equal '(4) arg) (delete-other-windows))
+    (message "Buffers deleted!")))
+
+      #+END_SRC

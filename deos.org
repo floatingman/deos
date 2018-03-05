@@ -188,6 +188,7 @@ This is where the magic starts
     (try-load 'init-theme)
     (try-load 'init-completion)
     (try-load 'init-evil)
+    (try-load 'init-helpers)
     (try-load 'init-developing)
     (try-load 'init-org)
     (try-load 'init-gtd)

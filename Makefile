@@ -6,6 +6,7 @@ el-modules = init-core.el \
 init-completion.el \
 init-developing.el \
 init-helm.el \
+init-helpers.el \
 init-org.el \
 init-gtd.el \
 init-dired.el \
