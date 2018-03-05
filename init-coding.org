@@ -1,4 +1,4 @@
-#+TITLE: Developing
+#+TITLE: Coding
 #+AUTHOR: Daniel Newman
 #+EMAIL: dwnewman78@gmail.com
 #+SETUPFILE: ~/deos/setupfiles/emacs.setup
@@ -7,7 +7,7 @@
 | *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
 
 #+BEGIN_SRC emacs-lisp
-(provide 'init-developing)
+(provide 'init-coding)
 #+END_SRC
 
 * Introduction
@@ -49,4 +49,10 @@ This helps with keeping track of your parenthesys
   :diminish paredit-mode "()"
   :config
   (add-hook 'prog-mode-hook 'paredit-mode))
+#+END_SRC
+
+* Groovy
+#+BEGIN_SRC emacs-lisp
+(use-package groovy-mode
+  :ensure t)
 #+END_SRC
