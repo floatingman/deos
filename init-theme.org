@@ -739,29 +739,7 @@ Adds asynchronous line numbers to programming-mode files
   :ensure t
   :init
   (setq nlinum-format "%d ")
-  ;;(add-hook 'prog-mode-hook 'nlinum-mode)
+  (add-hook 'prog-mode-hook 'nlinum-mode)
   :config
   (set-face-attribute 'linum nil :height 0.85 :slant 'normal))
-#+END_SRC
-
-
-This is a line number hack that I was trying out to only display line-numbers when using goto-line
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package nlinum
-  :ensure t
-  :preface
-  (defun goto-line-with-feedback ()
-    "Show line numbers temporarily, while prompting for the line number input"
-    (interactive)
-    (unwind-protect
-  (progn
-    (nlinum-mode 1)
-    (let ((num (read-number "Goto line: ")))
-      (goto-char (point-min))
-      (forward-line (1- num))))
-      (nlinum-mode -1)))
-  :init
-  (bind-key "C-c g" #'goto-line)
-  (global-set-key [remap goto-line] 'goto-line-with-feedback))
-
 #+END_SRC

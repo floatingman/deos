@@ -17,7 +17,40 @@ It is inevitable. I'm starting to adopt evil-mode, a vi like keybinding mode for
 (use-package evil
   :ensure t
   :config
-  (evil-mode 0))
+  (evil-mode 1))
+
+(use-package evil-leader
+  :ensure t
+  :config
+  (evil-leader/set-leader "SPC")
+  (evil-leader/set-key
+  "SPC" 'helm-M-x
+  "[" 'previous-error
+  "]" 'next-error
+  "bl" 'dired
+  "bb" 'helm-buffers-list
+  "bd" 'kill-buffer
+  "bk" 'kill-this-buffer
+  "bD" 'kill-other-buffers
+  "bn" 'next-buffer
+  "bp" 'previous-buffer
+  "eb" 'eval-buffer
+  "er" 'eval-region
+  "fs" 'save-buffer
+  "tl" 'toggle-truncate-lines
+  "wc" 'evil-window-delete
+  "wo" 'delete-other-windows
+  "wj" 'evil-window-down
+  "wk" 'evil-window-up
+  "wh" 'evil-window-left
+  "wl" 'evil-window-right
+  "wv" 'evil-window-vsplit
+  "ws" 'evil-window-split)
+  (global-evil-leader-mode))
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode))
 #+END_SRC
 
 Install goto-chg which is used by evil-mode to go back to the last change in a buffer

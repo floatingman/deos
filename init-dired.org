@@ -85,3 +85,29 @@ Icons in a buffer
   :init
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+END_SRC
+
+* Neotree
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :ensure t
+  :config
+  (evil-define-key 'normal neotree-mode-map
+    (kbd "TAB") 'neotree-enter
+    "H" 'neotree-hidden-file-toggle
+    "i" 'neotree-enter-horizontal-split
+    "s" 'neotree-enter-vertical-split
+    "q" 'neotree-hide
+    (kbd "RET") 'neotree-enter)
+
+  (evil-leader/set-key-for-mode 'neotree-mode
+    "mo" 'neotree-open-file-in-system-application
+    "md" 'neotree-delete-node
+    "mr" 'neotree-rename-node
+    "mc" 'neotree-create-node)
+
+  (setq neo-theme 'nerd)
+  (setq neo-window-fixed-size nil)
+  (setq neo-smart-open t)
+  (setq neo-window-width 40)
+  (setq neo-default-system-application "open"))
+#+END_SRC

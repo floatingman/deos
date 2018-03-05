@@ -4,6 +4,7 @@ EMACS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 el-modules = init-core.el \
 init-completion.el \
+init-developing.el \
 init-helm.el \
 init-org.el \
 init-gtd.el \
