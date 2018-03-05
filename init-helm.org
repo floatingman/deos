@@ -398,6 +398,12 @@ Per-project navigation
   :commands projectile-global-mode
   :diminish projectile-mode
   :init (add-hook 'after-init-hook #'projectile-global-mode)
+  (evil-leader/set-key
+    "pf" 'projectile-find-file
+    "pp" 'projectile-switch-project
+    "pb" 'projectile-switch-buffer
+    "ft" 'neotree-toggle
+    "pt" 'neotree-find-project-root)
   :config
   (bind-key "C-c p b" #'projectile-switch-to-buffer #'projectile-command-map)
   (bind-key "C-c p K" #'projectile-kill-buffers #'projectile-command-map)
@@ -409,6 +415,7 @@ Per-project navigation
   (add-to-list 'projectile-globally-ignored-files "GRTAGS")
   (add-to-list 'projectile-globally-ignored-files "GSYMS")
   (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+  (add-to-list 'projectile-globally-ignored-files "node_modules")
   ;; always ignore .class files
   (add-to-list 'projectile-globally-ignored-file-suffixes ".class")
   (use-package helm-projectile
