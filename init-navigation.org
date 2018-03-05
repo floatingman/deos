@@ -49,7 +49,13 @@ Transpose buffers between windows
 (global-set-key (kbd "C-x 4 t") 'transpose-buffers)
 #+END_SRC
 
-Random keybindings
+* Ace window mode
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :ensure t)
+#+END_SRC
+
+* Random keybindings
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x C-l") 'toggle-truncate-lines)
