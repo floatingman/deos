@@ -154,3 +154,17 @@ A few things to make Company work with dabbrev
   (add-to-list 'smart-tab-disabled-major-modes 'erc-mode)
   (add-to-list 'smart-tab-disabled-major-modes 'shell-mode))
 #+END_SRC
+
+* YASNIPPETS
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :config
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (evil-leader/set-key
+  "is" 'yas-insert-snippet
+  "in" 'yas-new-snippet)
+  (yas-global-mode 1))
+#+END_SRC
