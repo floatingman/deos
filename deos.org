@@ -185,9 +185,9 @@ This is where the magic starts
     ;; Setup load path
     (try-load 'init-core)
     (try-load 'init-utils)
+    (try-load 'init-evil)
     (try-load 'init-theme)
     (try-load 'init-completion)
-    (try-load 'init-evil)
     (try-load 'init-helpers)
     (try-load 'init-coding)
     (try-load 'init-javascript)
