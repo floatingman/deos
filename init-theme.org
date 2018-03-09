@@ -72,6 +72,7 @@ balanced of color and pleasing to my eyes.
         (set-face-background 'whitespace-newline (face-attribute 'default :background)))
       (use-package tao-theme
         :ensure t
+        :disabled t
         :init
         (load-theme 'tao-yin t)
         (require 'git-gutter)
@@ -85,31 +86,36 @@ balanced of color and pleasing to my eyes.
         (require 'semantic/decorate/mode)
         (require 'semantic/decorate/include)
         (set-face-attribute 'semantic-tag-boundary-face nil :overline "grey25")
-        (set-face-attribute 'semantic-decoration-on-unknown-includes nil :background "grey15")))
-
-      (use-package leuven-theme
+        (set-face-attribute 'semantic-decoration-on-unknown-includes
+                            nil :background "grey15"))
+      (use-package nord-theme
         :ensure t
-        :disabled t
         :init
-        (load-theme 'leuven t)
-        ;; Ever-so-slightly darker background
-        (set-face-background 'default "#F7F7F7"))
-      (use-package tao-theme
-        :ensure t
-        :disabled t
-        :init
-        (load-theme 'tao-yang t)
-        (require 'git-gutter)
-        (require 'git-gutter-fringe)
-        (set-face-attribute 'git-gutter:deleted nil :foreground "red")
-        (set-face-attribute 'git-gutter-fr:deleted nil :foreground "red")
-        (set-face-attribute 'git-gutter:modified nil :foreground "light blue")
-        (set-face-attribute 'git-gutter-fr:modified nil :foreground "light blue")
-        (set-face-attribute 'git-gutter:added nil :foreground "green")
-        (set-face-attribute 'git-gutter-fr:added nil :foreground "green"))
-      (use-package dakrone-light-theme
-        :ensure t
-        :init (load-theme 'dakrone-light t)))
+        ;; Make comments 15% brighter
+        (setq nord-comment-brightness 15)
+        (load-theme 'nord t)
+        (require 'semantic/decorate/mode)
+        (require 'semantic/decorate/include)
+        (set-face-attribute 'semantic-tag-boundary-face nil :overline "grey25")
+        (set-face-attribute 'semantic-decoration-on-unknown-includes
+                            nil :background "grey15")))
+  (use-package tao-theme
+    :ensure t
+    :disabled t
+    :init
+    (load-theme 'tao-yang t)
+    (setq-default line-spacing 1)
+    (require 'git-gutter)
+    (require 'git-gutter-fringe)
+    (set-face-attribute 'git-gutter:deleted nil :foreground "red")
+    (set-face-attribute 'git-gutter-fr:deleted nil :foreground "red")
+    (set-face-attribute 'git-gutter:modified nil :foreground "light blue")
+    (set-face-attribute 'git-gutter-fr:modified nil :foreground "light blue")
+    (set-face-attribute 'git-gutter:added nil :foreground "green")
+    (set-face-attribute 'git-gutter-fr:added nil :foreground "green"))
+  (use-package dakrone-light-theme
+    :ensure t
+    :init (load-theme 'dakrone-light t)))
 #+END_SRC
 
 If using OSX, the colors and fonts look a bit wonky, so let's fix that
