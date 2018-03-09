@@ -56,3 +56,8 @@ This helps with keeping track of your parenthesys
 (use-package groovy-mode
   :ensure t)
 #+END_SRC
+
+* Electric Pairs
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
+#+END_SRC
