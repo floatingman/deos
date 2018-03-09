@@ -55,6 +55,7 @@ to the bin folder
   mkdir -p ~/.emacs.d
   mkdir -p ~/.emacs.d/eshell
   mkdir -p ~/.emacs.d/desktops/default
+  mkdir -p ~/.emacs.d/org-gcal/
 #+END_SRC
 
 #+BEGIN_SRC sh :tangle install.sh :eval no
@@ -65,6 +66,7 @@ to the bin folder
     ln -sfv $PWD/override ~/.emacs.d/override
     ln -sfv $PWD/snippets ~/.emacs.d/snippets
     cp -vf bin/* ~/bin
+    cp -vf org.png ~/.emacs.d/org-gcal/
     cd $PWD/override/cedet && make
     cd ~/deos
 #+END_SRC
