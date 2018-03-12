@@ -162,6 +162,7 @@ Here is a list of the bindings I'm trying out
                 ("f" . helm-projectile-find-file)
                 ("p" . helm-projectile-switch-project)
                 ("s s" . helm-projectile-ag))
+
     :init
     (setq projectile-switch-project-action 'helm-projectile)
     (helm-projectile-on)
@@ -422,6 +423,8 @@ Per-project navigation
     :ensure t
     :init
     (use-package helm-ag
+      :ensure t)
+    (use-package helm-rg
       :ensure t)
     (use-package grep) ;; required for helm-ag to work properly
     (setq projectile-completion-system 'helm)
